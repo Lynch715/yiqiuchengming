@@ -174,11 +174,11 @@ tr.me td{color:var(--green);font-weight:700}
   </div>
   <div class="card">
     <h2>下一场比赛</h2>
-    <div class="row">
-      <div class="grow" id="hNext" style="font-size:15px;line-height:1.7"></div>
-      <button class="btn" id="btnKick" onclick="startMatch()">开始比赛</button>
-      <button class="btn ghost" onclick="showTrain()">训练 <span id="hTp"></span></button>
-      <button class="btn ghost" onclick="showLife()">生活 💰</button>
+    <div id="hNext" style="font-size:14.5px;line-height:1.85"></div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn grow" id="btnKick" onclick="startMatch()">开始比赛</button>
+      <button class="btn ghost grow" onclick="showTrain()">训练 <span id="hTp"></span></button>
+      <button class="btn ghost grow" onclick="showLife()">生活 💰</button>
     </div>
   </div>
   <div class="card">
@@ -261,6 +261,7 @@ const $=id=>document.getElementById(id);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const rnd=a=>a[Math.floor(Math.random()*a.length)];
 const g=()=>Math.random()+Math.random()+Math.random()+Math.random()-2; // 近似正态 [-2,2]
+const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1)); // 区间随机整数
 function pois(l){let L=Math.exp(-l),k=0,p=1;do{k++;p*=Math.random()}while(p>L);return Math.min(k-1,5)}
 function show(id){document.querySelectorAll('section').forEach(s=>s.classList.remove('on'));$(id).classList.add('on')}
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -463,7 +464,7 @@ function goHome(){
       $('hNext').innerHTML=`<b>🏆 足协杯 ${FA_STAGES[S.fa.stage]}</b><br><span style="color:var(--dim)">单场淘汰——战平将进入点球大战！</span>`+taskLine+warns;
     else{
       const o=S.aclGroup.opps[S.aclGroup.idx];
-      $('hNext').innerHTML=`<b>🌏 亚冠小组赛第${S.aclGroup.idx+1}场 vs ${badge(o,20)}${o.name}</b><br><span style="color:var(--dim)">对手实力 ${o.str} · 亚洲之巅的较量</span>`+taskLine+warns;
+      $('hNext').innerHTML=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-weight:700">🌏 亚冠小组赛第${S.aclGroup.idx+1}场 <span style="color:var(--dim);font-weight:400">vs</span> ${badge(o,20)}${o.name}</div><span style="color:var(--dim)">对手实力 ${o.str} · 亚洲之巅的较量</span>`+taskLine+warns;
     }
     $('btnKick').textContent='踢杯赛';
     $('btnKick').style.display='';
@@ -471,7 +472,7 @@ function goHome(){
     const fx=S.schedule[S.round];
     const o=S.teams[fx.opp];
     const ht=fx.home?S.teams[0]:o, at=fx.home?o:S.teams[0];
-    $('hNext').innerHTML=`<b>${badge(ht,20)}${ht.name} vs ${badge(at,20)}${at.name}</b><br><span style="color:var(--dim)">对手实力 ${o.str} · ${fx.home?'主场':'客场'}作战</span>`+taskLine+warns;
+    $('hNext').innerHTML=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-weight:700">${badge(ht,20)}${ht.name}<span style="color:var(--dim);font-weight:400">vs</span>${badge(at,20)}${at.name}</div><span style="color:var(--dim)">对手实力 ${o.str} · ${fx.home?'主场':'客场'}作战</span>`+taskLine+warns;
     $('btnKick').textContent='开始比赛';
     $('btnKick').style.display='';
   }else{
@@ -518,10 +519,17 @@ function calcWage(){
   return Math.max(1,Math.round(base*(1+(overall()-55)/40)));
 }
 const ITEMS=[
- {id:'diet',  name:'私人营养师', cost:20, desc:'每周精力恢复 +8'},
- {id:'physio',name:'私人理疗师', cost:40, desc:'每场比赛精力消耗 -6'},
- {id:'car',   name:'豪华跑车',   cost:30, desc:'人气 +10'},
- {id:'villa', name:'海景豪宅',   cost:100,desc:'人气 +15，每周精力恢复 +5'},
+ {id:'diet',   name:'私人营养师',   cost:20,  desc:'每周精力恢复 +8'},
+ {id:'physio', name:'私人理疗师',   cost:40,  desc:'每场比赛精力消耗 -6'},
+ {id:'car',    name:'豪华跑车',     cost:30,  desc:'人气 +10'},
+ {id:'villa',  name:'海景豪宅',     cost:100, desc:'人气 +15，每周精力恢复 +5'},
+ {id:'rehab',  name:'康复中心会员', cost:250, desc:'每周精力恢复再 +10'},
+ {id:'analyst',name:'私人技术分析师',cost:400, desc:'每场比赛关键时刻 +1 次（替补时无效）'},
+ {id:'agent',  name:'金牌经纪人',   cost:500, desc:'每场比赛球探关注额外 +2'},
+ {id:'academy',name:'创办青训学院', cost:1000,desc:'人气 +30，退役时生涯评分大幅加成'},
+ {id:'jet',    name:'私人飞机',     cost:2000,desc:'客场不再有劣势，每场精力消耗再 -4'},
+ {id:'shares', name:'俱乐部股份',   cost:5000,desc:'每周额外分红（约为球队实力的一半，万）'},
+ {id:'charity',name:'慈善捐款',     cost:50,  desc:'人气 +3，教练信任 +1（可重复捐）',repeat:true},
 ];
 function showLife(){
   const p=S.player;
@@ -530,7 +538,7 @@ function showLife(){
   $('lfPop').textContent=p.pop;
   $('lfSponsor').textContent=p.sponsor.name?`🤝 赞助商：${p.sponsor.name}（每周 +${p.sponsor.weekly}万）`:'暂无赞助商——人气30以上会有品牌找上门。';
   $('lfItems').innerHTML=ITEMS.map(it=>{
-    const owned=p.items[it.id];
+    const owned=!it.repeat&&p.items[it.id];
     return `<div class="lrow"><div class="info"><b>${it.name}</b><span>${it.desc}</span></div>
       ${owned?'<span style="color:var(--green);font-weight:700">已拥有</span>'
         :`<button class="btn" ${p.money<it.cost?'disabled':''} onclick="buyItem('${it.id}')">${it.cost}万</button>`}</div>`;
@@ -539,35 +547,64 @@ function showLife(){
 }
 function buyItem(id){
   const p=S.player,it=ITEMS.find(x=>x.id===id);
-  if(p.items[id]||p.money<it.cost)return;
-  p.money-=it.cost;p.items[id]=true;
+  if((!it.repeat&&p.items[id])||p.money<it.cost)return;
+  p.money-=it.cost;
+  if(!it.repeat)p.items[id]=true;
   if(id==='car')p.pop=clamp(p.pop+10,0,100);
   if(id==='villa')p.pop=clamp(p.pop+15,0,100);
+  if(id==='academy')p.pop=clamp(p.pop+30,0,100);
+  if(id==='charity'){p.pop=clamp(p.pop+3,0,100);p.trust=clamp(p.trust+1,5,99)}
   save();showLife();
 }
 
 /* ============ 随机事件 ============ */
+// 事件效果全部为"活属性"：区间随机 + 按联赛级别/属性缩放 + 概率翻车
+const tf=()=>({3:1,2:2.5,1:6})[S.tier]; // 级别越高，钱的数目越大
 const EVENTS=[
  {id:'media',title:'赛后专访',text:'记者把话筒递到你面前："对自己最近的表现怎么看？"',ch:[
-   {l:'高调放话："我是这个联赛最强的前锋！"',f:p=>{p.pop=clamp(p.pop+6,0,100);p.trust=clamp(p.trust-3,5,99);return '头条诞生！人气+6；教练皱了皱眉，信任-3'}},
-   {l:'谦逊回应："功劳属于全队。"',f:p=>{p.trust=clamp(p.trust+3,5,99);p.pop=clamp(p.pop+1,0,100);return '更衣室对你好感大增。信任+3，人气+1'}}]},
+   {l:'高调放话："我是这个联赛最强的前锋！"',f:p=>{
+     if(Math.random()<0.22){const d=ri(3,6);p.pop=clamp(p.pop-d,0,100);p.trust=clamp(p.trust-ri(2,4),5,99);
+       return `翻车了！下一场你要是进不了球……全网群嘲。人气-${d}，信任也掉了`}
+     const po=ri(4,9),tr=ri(2,5);p.pop=clamp(p.pop+po,0,100);p.trust=clamp(p.trust-tr,5,99);
+     return `头条诞生！人气+${po}；教练皱了皱眉，信任-${tr}`}},
+   {l:'谦逊回应："功劳属于全队。"',f:p=>{
+     const tr=ri(2,5),po=ri(0,2);p.trust=clamp(p.trust+tr,5,99);p.pop=clamp(p.pop+po,0,100);
+     return `更衣室对你好感大增。信任+${tr}${po?`，人气+${po}`:''}`}}]},
  {id:'party',title:'队内烧烤聚会',text:'老队长组织全队烧烤，问你来不来。',ch:[
-   {l:'去！和队友打成一片',f:p=>{p.energy=clamp(p.energy-8,0,100);p.trust=clamp(p.trust+3,5,99);p.pop=clamp(p.pop+2,0,100);return '笑声不断，兄弟情+1。信任+3，人气+2，精力-8'}},
-   {l:'婉拒，回家休息',f:p=>{p.energy=clamp(p.energy+4,0,100);return '早睡早起身体好。精力+4'}}]},
+   {l:'去！和队友打成一片',f:p=>{
+     const en=ri(5,12),tr=ri(2,5),po=ri(1,3);
+     p.energy=clamp(p.energy-en,0,100);p.trust=clamp(p.trust+tr,5,99);p.pop=clamp(p.pop+po,0,100);
+     return `笑声不断，兄弟情+1。信任+${tr}，人气+${po}，精力-${en}`}},
+   {l:'婉拒，回家休息',f:p=>{const en=ri(3,7);p.energy=clamp(p.energy+en,0,100);return `早睡早起身体好。精力+${en}`}}]},
  {id:'knock',title:'训练中扭伤脚踝',text:'落地时脚踝一阵刺痛……队医说问题不大，但需要处理。',ch:[
-   {l:'自费顶级理疗（2万）',cond:p=>p.money>=2,f:p=>{p.money-=2;return '恢复如初，有钱真好。花费2万'}},
-   {l:'咬牙硬抗',f:p=>{p.energy=clamp(p.energy-18,0,100);return '伤势拖累了状态。精力-18'}}]},
- {id:'ad',title:'商业代言邀约',cond:p=>p.pop>=40,text:'一家运动品牌想请你拍广告，报酬15万，但要占用休息时间。',ch:[
-   {l:'接！镜头感拉满',f:p=>{p.money+=15;p.energy=clamp(p.energy-6,0,100);p.pop=clamp(p.pop+5,0,100);return '广告大获成功！+15万，人气+5，精力-6'}},
-   {l:'推掉，专注训练',f:p=>{p.trust=clamp(p.trust+2,5,99);return '教练暗暗点头。信任+2'}}]},
+   {l:'自费顶级理疗',cond:p=>p.money>=2*tf(),f:p=>{
+     const c=Math.round(ri(2,4)*tf());p.money-=c;return `恢复如初，有钱真好。花费${c}万`}},
+   {l:'咬牙硬抗',f:p=>{
+     const en=clamp(ri(14,24)-Math.round(p.attrs.sta*0.1),6,24); // 体能好扛得住
+     p.energy=clamp(p.energy-en,0,100);return `伤势拖累了状态。精力-${en}（体能${p.attrs.sta}帮你扛了一部分）`}}]},
+ {id:'ad',title:'商业代言邀约',cond:p=>p.pop>=40,text:'一家运动品牌想请你拍广告，报酬不菲，但要占用休息时间。',ch:[
+   {l:'接！镜头感拉满',f:p=>{
+     const mo=Math.round((8+p.pop*0.3)*tf()*(0.8+Math.random()*0.5)),en=ri(4,9),po=ri(3,7);
+     p.money+=mo;p.earnings+=mo;p.energy=clamp(p.energy-en,0,100);p.pop=clamp(p.pop+po,0,100);
+     return `广告大获成功！+${mo}万（人气越高片酬越贵），人气+${po}，精力-${en}`}},
+   {l:'推掉，专注训练',f:p=>{const tr=ri(1,3);p.trust=clamp(p.trust+tr,5,99);return `教练暗暗点头。信任+${tr}`}}]},
  {id:'kid',title:'青训小球员求教',text:'一个青训营的孩子在训练场外等你，眼里全是光："能教教我怎么射门吗？"',ch:[
-   {l:'留下来陪他加练一小时',f:p=>{p.energy=clamp(p.energy-4,0,100);p.pop=clamp(p.pop+3,0,100);if(p.attrs.men<95)p.attrs.men++;return '教别人也是修行。人气+3，心理+1，精力-4'}},
-   {l:'签个名，让他找教练',f:p=>{p.pop=clamp(p.pop-1,0,100);return '孩子有点失落。人气-1'}}]},
+   {l:'留下来陪他加练一小时',f:p=>{
+     const en=ri(3,6),po=ri(2,5),men=Math.random()<0.6&&p.attrs.men<95?1:0;
+     p.energy=clamp(p.energy-en,0,100);p.pop=clamp(p.pop+po,0,100);if(men)p.attrs.men++;
+     return `教别人也是修行。人气+${po}${men?'，心理+1':''}，精力-${en}`}},
+   {l:'签个名，让他找教练',f:p=>{const po=ri(0,2);p.pop=clamp(p.pop-po,0,100);return po?`孩子有点失落。人气-${po}`:'孩子拿着签名也挺开心。'}}]},
  {id:'night',title:'夜店邀约',cond:p=>p.age<30,text:'几个队友晚上要去市里最火的夜店，喊你一起。',ch:[
-   {l:'去放松一下',f:p=>{p.energy=clamp(p.energy+6,0,100);p.trust=clamp(p.trust-4,5,99);p.pop=clamp(p.pop-3,0,100);return '被狗仔拍到了……精力+6，信任-4，人气-3'}},
-   {l:'拒绝，职业球员要自律',f:p=>{p.trust=clamp(p.trust+1,5,99);return '自律给你自由。信任+1'}}]},
+   {l:'去放松一下',f:p=>{
+     const en=ri(4,8);p.energy=clamp(p.energy+en,0,100);
+     if(Math.random()<0.4)return `玩得很尽兴，居然没被拍到。精力+${en}`;
+     const tr=ri(3,6),po=ri(2,5);p.trust=clamp(p.trust-tr,5,99);p.pop=clamp(p.pop-po,0,100);
+     return `被狗仔拍到了……精力+${en}，信任-${tr}，人气-${po}`}},
+   {l:'拒绝，职业球员要自律',f:p=>{const tr=ri(1,2);p.trust=clamp(p.trust+tr,5,99);return `自律给你自由。信任+${tr}`}}]},
  {id:'viral',title:'你的集锦火了',cond:p=>p.pop>=25&&p.goals>=5,text:'有博主把你本赛季的进球剪成集锦，播放量破了百万！',ch:[
-   {l:'转发！配文"继续努力"',f:p=>{p.pop=clamp(p.pop+8,0,100);p.scout=clamp(p.scout+5,0,100);return '全网都认识你了。人气+8，球探关注+5'}}]},
+   {l:'转发！配文"继续努力"',f:p=>{
+     const po=ri(5,12),sc=ri(3,8);p.pop=clamp(p.pop+po,0,100);p.scout=clamp(p.scout+sc,0,100);
+     return `全网都认识你了。人气+${po}，球探关注+${sc}`}}]},
 ];
 let EV=null;
 function showEvent(){
@@ -607,7 +644,7 @@ function beginClubCup(q){
 }
 function beginMatch(cfg){
   const opp=cfg.opp,A=S.player.attrs,p=S.player;
-  const myStr=cfg.cup?ntStr():S.teams[0].str+(overall()-55)*0.35+(cfg.home?2:0);
+  const myStr=cfg.cup?ntStr():S.teams[0].str+(overall()-55)*0.35+((cfg.home||p.items.jet)?2:0);
   const lamT=clamp(1.15+(myStr-opp.str)*0.045,0.15,2.6);
   const lamO=clamp(1.15+(opp.str-myStr)*0.045,0.15,2.6);
   const eF=clamp(p.energy/100,0.4,1);
@@ -621,7 +658,7 @@ function beginMatch(cfg){
   const pickMin=lo=>{let m;do{m=lo+Math.floor(Math.random()*(88-lo))}while(usedMin.has(m));usedMin.add(m);return m};
   for(let i=0;i<pois(lamT*0.55);i++)M.evs.push({min:pickMin(4),t:'tg'});
   for(let i=0;i<pois(lamO);i++)M.evs.push({min:pickMin(4),t:'og'});
-  let nK=M.bench?2:3+((A.dri+A.pac>=130)?1:0)+(Math.random()<0.45?1:0)+(p.trust>=70?1:0)-(eF<0.7?1:0);
+  let nK=M.bench?2:3+((A.dri+A.pac>=130)?1:0)+(Math.random()<0.45?1:0)+(p.trust>=70?1:0)-(eF<0.7?1:0)+(p.items.analyst?1:0);
   nK=Math.max(1,nK);
   for(let i=0;i<nK;i++)M.evs.push({min:pickMin(M.bench?58:4),t:'key'});
   for(let m=8;m<90;m+=9+Math.floor(Math.random()*5))if(!usedMin.has(m))M.evs.push({min:m,t:'fl'});
@@ -1088,12 +1125,13 @@ function endMatch(){
   rating=Math.round(clamp(rating,4,10)*10)/10;
   const tpGain=Math.max(0,Math.floor(rating-5.5))+M.goals;
   // 精力消耗 & 信任变化
-  const eCost=Math.round((M.bench?18:30)-p.attrs.sta*0.1-(p.items.physio?6:0));
+  const eCost=Math.round((M.bench?18:30)-p.attrs.sta*0.1-(p.items.physio?6:0)-(p.items.jet?4:0));
   p.energy=clamp(p.energy-eCost,0,100);
-  // 收入与人气
-  const income=p.wage+(p.sponsor.weekly||0);
+  // 收入与人气（周薪+赞助+股份分红）
+  const income=p.wage+(p.sponsor.weekly||0)+(p.items.shares?Math.round(S.teams[0].str*0.5):0);
   p.money+=income;p.earnings+=income;
   p.pop=clamp(p.pop+M.goals+(rating>=8?2:0)-(rating<6.5&&M.goals===0?1:0),0,100);
+  if(p.items.agent)p.scout=clamp(p.scout+2,0,100);
   const tDelta=clamp(Math.round((rating-6.4)*4)+(win?1:0),-9,9);
   p.trust=clamp(p.trust+tDelta,5,99);
   M.tDelta=tDelta;
@@ -1285,7 +1323,7 @@ function cupClose(){
 }
 function afterResult(){
   const p=S.player;
-  let rec=20+p.attrs.sta*0.12+(p.items.diet?8:0)+(p.items.villa?5:0);
+  let rec=20+p.attrs.sta*0.12+(p.items.diet?8:0)+(p.items.villa?5:0)+(p.items.rehab?10:0);
   p.energy=clamp(p.energy+Math.round(rec),0,100); // 一周自然恢复
   if(S.round>=ROUNDS){
     const ct=cupType();
@@ -1366,7 +1404,7 @@ function seasonEnd(){
     lines.push('👑 金球奖！你是这个星球最好的球员！人气+20');
   }
   // 赞助商按人气自动升级
-  for(const[th,nm,wk]of[[30,'动力运动饮料',2],[60,'疾风球鞋',8],[85,'寰宇航空',25]])
+  for(const[th,nm,wk]of[[30,'动力运动饮料',2],[60,'疾风球鞋',8],[85,'寰宇航空',25],[95,'环球体育巨头',60]])
     if(p.pop>=th&&(p.sponsor.weekly||0)<wk){p.sponsor={name:nm,weekly:wk};lines.push(`🤝 新赞助合同：${nm}（每周 +${wk}万）`)}
   p.tp+=bonus;
   // 冲级：带队夺冠且不在顶级联赛
@@ -1426,7 +1464,7 @@ function retire(){
   const p=S.player,hn=p.honors;
   const cnt=t=>hn.filter(h=>h.includes(t)).length;
   const score=p.careerGoals+cnt('冠军')*15+cnt('射手')*8+cnt('MVP')*8+cnt('金球')*40
-    +(hn.includes('足坛之巅')?50:0)+Math.round(p.earnings/50);
+    +(hn.includes('足坛之巅')?50:0)+Math.round(p.earnings/50)+(p.items.academy?100:0);
   const grade=score>=220?'S':score>=130?'A':score>=70?'B':score>=35?'C':'D';
   const gtxt={S:'传奇！你的名字将被写进足球史册。',A:'豪门核心，一代球迷心中的英雄。',
     B:'扎实的职业生涯，问心无愧。',C:'平凡但真实的足球人生。',D:'至少，你曾追过梦。'}[grade];
