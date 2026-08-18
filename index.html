@@ -175,10 +175,12 @@ tr.me td{color:var(--green);font-weight:700}
   <div class="card">
     <h2>下一场比赛</h2>
     <div id="hNext" style="font-size:14.5px;line-height:1.85"></div>
+    <div id="hTactic" style="margin-top:10px"></div>
     <div class="row" style="margin-top:14px">
       <button class="btn grow" id="btnKick" onclick="startMatch()">开始比赛</button>
       <button class="btn ghost grow" onclick="showTrain()">训练 <span id="hTp"></span></button>
       <button class="btn ghost grow" onclick="showLife()">生活 💰</button>
+      <button class="btn ghost grow" onclick="showStats()">档案 📋</button>
     </div>
   </div>
   <div class="card">
@@ -233,6 +235,15 @@ tr.me td{color:var(--green);font-weight:700}
     <div class="center mt"><button class="btn" onclick="goHome()">返回</button></div>
   </div>
 </section>
+
+<!-- 生涯档案 -->
+<section id="scStats">
+  <div class="card">
+    <h2>📋 生涯档案</h2>
+    <div id="stBody"></div>
+    <div class="center mt"><button class="btn" onclick="goHome()">返回</button></div>
+  </div>
+</section>
 </main>
 
 <!-- 事件弹窗 -->
@@ -270,6 +281,23 @@ function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor
 const ATTRS={sho:'射门',dri:'盘带',pac:'速度',pas:'传球',sta:'体能',men:'心理'};
 const ROUNDS=30; // 双循环，16队
 const TIERS={
+ 0:{name:'欧洲超级联赛',base:88,pool:[
+   {n:'皇家马德历',ab:'皇',c1:'#c9c9d4',c2:'#8f8fa8'},
+   {n:'巴塞罗那达',ab:'巴',c1:'#a04a5a',c2:'#334c8a'},
+   {n:'曼彻斯特蓝月',ab:'蓝',c1:'#6cb3d9',c2:'#3d7a9e'},
+   {n:'曼彻斯特红魔',ab:'红',c1:'#c05a4a',c2:'#8a3428'},
+   {n:'利物浦尔',ab:'利',c1:'#b04545',c2:'#7d2828'},
+   {n:'阿森纳尔',ab:'枪',c1:'#c25a5a',c2:'#8a3a3a'},
+   {n:'切尔西亚',ab:'车',c1:'#4a5aa8',c2:'#2f3a77'},
+   {n:'拜仁慕尼黎',ab:'拜',c1:'#b8504f',c2:'#833232'},
+   {n:'多特蒙德堡',ab:'多',c1:'#d0b04a',c2:'#967d2f'},
+   {n:'巴黎圣日门',ab:'巴',c1:'#3a4a80',c2:'#252f56'},
+   {n:'尤文图斯克',ab:'尤',c1:'#9a9aa4',c2:'#5c5c66'},
+   {n:'AC米蓝',ab:'米',c1:'#a84a4a',c2:'#2b2b33'},
+   {n:'国际米蓝',ab:'国',c1:'#4a5a9e',c2:'#22283d'},
+   {n:'马德里竞捷',ab:'床',c1:'#b05a5a',c2:'#3a4a80'},
+   {n:'那不勒斯特',ab:'那',c1:'#5a9ec2',c2:'#37698a'},
+   {n:'热刺角',ab:'刺',c1:'#d4d4de',c2:'#3d4a66'}]},
  3:{name:'中乙联赛',base:53,pool:[
    {n:'湖南湘涛',ab:'湘',c1:'#4a7a96',c2:'#2f5468'},
    {n:'青岛红狮',ab:'狮',c1:'#a85a4d',c2:'#77392f'},
@@ -324,11 +352,13 @@ const TIERS={
 };
 // 各级联赛队友名单池（每次入队随机抽5人组成你的搭档）
 const TIER_MATES={
+ 0:['贝林厄姆斯','维尼修斯朱','哈兰德森','姆巴佩尔','萨拉赫丁','德布劳内瓦','莱万多斯','格列兹曼恩','凯恩斯','罗德里格','佩德里克','穆西亚拉赫'],
  3:['赵小磊','钱志远','孙广坤','周天佑','吴铁柱','郑家豪','刘志强','陈家俊','杨光','胡军平','马小飞','高原'],
  2:['谭隆','黄子昌','冯博宣','汪进贤','董学盛','王梓铭','曹永靖','孙沁瀚','徐武','阿不都海提','段刘裕','陶强隆'],
  1:['武雷','韦仕豪','张玉柠','林良茗','谢鹏非','徐鑫','刘殿佐','蒋广泰','王上远','吴熙','戴伟俊','巴顿力']};
 // 各级教练与解说（一字之差）
 const COACHES={
+ 0:['安切洛蒂尼','瓜迪奥拉斯','克洛普夫','安东尼孔蒂','温格尔'],
  3:['徐根保','谢辉','陈杨','李国绪','王保山'],
  2:['李肖鹏','于根维','邵佳义','高洪博','孙继海尔'],
  1:['崔康席','斯洛茨基','穆斯卡托','郝维','徐正原']};
@@ -338,7 +368,12 @@ const FA_AFTER=[5,10,15,20,25], ACL_AFTER=[3,8,13];
 const FA_STAGES=['32强','16强','8强','半决赛','决赛'];
 const FA_PRIZE=[5,10,20,40,100];
 const ACL_POOL=[['川崎先峰',88],['浦和红宝',87],['全北当代',86],['蔚山贤大',85],['利雅得弯月',93],['吉达联队',90],['柔佛新山',82],['曼谷联',78],['墨尔本城',83],['横滨海员',86]];
+const UCL_POOL=[['皇家马德历',96],['曼彻斯特蓝月',95],['拜仁慕尼黎',94],['巴黎圣日门',93],['国际米蓝',92],['阿森纳尔',92],['勒沃库森堡',90],['波尔图曼',88],['凯尔特人队',85],['萨尔茨堡红牛角',84]];
+const contPool=()=>S.tier===0?UCL_POOL:ACL_POOL;
+const contName=()=>S.tier===0?'欧冠':'亚冠';
+const faName=()=>S.tier===0?'国王杯':'足协杯';
 const PEN_SITU={id:'pen',name:'点球（决定命运）',spread:0.7,bspd:6.2,kspd:0.02,reach:1.35};
+const FK_SITU={id:'fk',name:'任意球（绕过人墙）',spread:1.25,bspd:5.6,kspd:0.03,reach:1.2};
 const GOAL_CALLS=[
  '＄：漂亮！这脚射门势大力沉，门将毫无办法！',
  '＄：他做到了！整座球场都在呼喊他的名字！',
@@ -378,6 +413,19 @@ function loadGame(){
     S.table=freshTable();S.schedule=makeSchedule();
   }
   if(!S.fa)newSeasonComps(); // 旧档补齐杯赛/军令状/射手榜
+  { // 新版本字段迁移
+    const p=S.player;
+    if(p.injury==null)p.injury=0;
+    if(p.love==null){p.love=0;p.partner='';p.child=0}
+    if(!p.perks)p.perks=[];
+    if(!p.ach)p.ach={};
+    if(!p.history)p.history=[];
+    if(p.wageUp==null)p.wageUp=0;
+    if(S.tactic==null)S.tactic='bal';
+    if(S.chem==null)S.chem=40;
+    if(!S.nemesis){const np=TIER_MATES[S.tier].filter(x=>x!==p.name&&!(S.mates||[]).includes(x));
+      S.nemesis={n:rnd(np.length?np:TIER_MATES[S.tier]),g:p.careerGoals+ri(5,20),sg:0}}
+  }
   goHome();
 }
 if(localStorage.getItem('yqcm1'))$('btnLoad').style.display='block';
@@ -399,9 +447,10 @@ function makeSchedule(){
   for(let r=0;r<ROUNDS;r++)sch.push({opp:ord[r%15],home:r<15});
   return sch;
 }
-function rollSquad(){ // 入队/换季时刷新队友与主教练
+function rollSquad(newTeam){ // 入队/换季时刷新队友与主教练
   S.mates=shuffle(TIER_MATES[S.tier]).slice(0,5);
   S.coach=rnd(COACHES[S.tier]);
+  S.chem=newTeam?35:clamp((S.chem||40)-5,35,100); // 换季默契小降，转会大重置
 }
 function genRivals(){ // 射手榜竞争对手
   const pool=TIER_MATES[S.tier].filter(n=>!S.mates.includes(n));
@@ -415,7 +464,7 @@ function newSeasonComps(){ // 杯赛与状态初始化
   S.cupQ=[];S.fa={alive:true,stage:0};
   S.aclActive=!!S.aclNext;S.aclNext=false;
   S.aclGroup=S.aclActive?{idx:0,pts:0,rec:[],
-    opps:shuffle(ACL_POOL).slice(0,3).map(o=>({name:o[0],ab:o[0][0],str:o[1],c1:'#6f5f8a',c2:'#4a4060'}))}:null;
+    opps:shuffle(contPool()).slice(0,3).map(o=>({name:o[0],ab:o[0][0],str:o[1],c1:'#6f5f8a',c2:'#4a4060'}))}:null;
   S.player.form=50;
   genRivals();genTask();
 }
@@ -426,11 +475,13 @@ function newGame(){
       money:5,pop:5,earnings:0,wage:1,sponsor:{name:'',weekly:0},items:{},
       attrs:{sho:54,pas:48,dri:52,pac:56,sta:50,men:44},
       apps:0,goals:0,assists:0,ratings:[],
+      injury:0,love:0,partner:'',child:0,perks:[],ach:{},history:[],
       careerApps:0,careerGoals:0,careerAssists:0,honors:[]},
-    tier:3,round:0,teams:null,table:null,schedule:makeSchedule()};
+    tier:3,round:0,tactic:'bal',chem:40,teams:null,table:null,schedule:makeSchedule()};
   const club=rnd(TIERS[3].pool);
   S.teams=makeTeams(3,{name:club.n,ab:club.ab,c1:club.c1,c2:club.c2,str:55});
-  rollSquad();newSeasonComps();
+  S.nemesis={n:rnd(TIER_MATES[3].filter(x=>x!==name)),g:0,sg:0};
+  rollSquad();S.chem=40;newSeasonComps();
   S.table=freshTable();
   S.player.wage=calcWage();
   save();goHome();
@@ -446,7 +497,7 @@ function goHome(){
   $('hName').textContent=p.name;
   const avg=p.ratings.length?(p.ratings.reduce((x,y)=>x+y,0)/p.ratings.length).toFixed(2):'—';
   const formTag=p.form>=75?' · <span style="color:var(--gold)">🔥 状态火热</span>':p.form<=25?' · <span style="color:var(--blue)">❄️ 状态低迷</span>':'';
-  $('hSub').innerHTML=`${p.age}岁 · 前锋 · ${S.teams[0].name}（${TIERS[S.tier].name}）· 主教练 ${S.coach}${formTag}<br>本季 ${p.apps}场 ${p.goals}球 ${p.assists}助攻 · 场均评分 ${avg} · 🔭 球探关注 ${p.scout}<br>💰 存款 ${p.money}万 · ⭐ 人气 ${p.pop}`+
+  $('hSub').innerHTML=`${p.age}岁 · 前锋 · ${S.teams[0].name}（${TIERS[S.tier].name}）· 主教练 ${S.coach}${formTag}<br>本季 ${p.apps}场 ${p.goals}球 ${p.assists}助攻 · 场均评分 ${avg} · 🔭 球探关注 ${p.scout}<br>💰 存款 ${p.money}万 · ⭐ 人气 ${p.pop}${p.partner?` · 💘 ${p.partner}${p.love>=3?'（已婚）':''}`:''}${p.child?` · 👶×${p.child}`:''}`+
     (p.honors.length?`<br><span class="honor">🏆 ${p.honors.join('、')}</span>`:'');
   $('hAttrs').innerHTML=Object.keys(ATTRS).map(k=>{
     const v=p.attrs[k];
@@ -457,14 +508,15 @@ function goHome(){
   $('hSeason').textContent=p.season;
   const taskLine=S.task?`<br><span style="color:var(--dim)">📋 军令状：联赛前${S.task.rank} · 赛季${S.task.goals}球（已进${p.goals}）</span>`:'';
   const warns=(p.trust<30?`<br><span style="color:var(--red)">⚠️ ${S.coach}指导对你不满（信任${p.trust}），你只能坐替补席等待登场</span>`:'')+
-      (p.energy<50?`<br><span style="color:var(--gold)">⚠️ 精力不足（${p.energy}），比赛中会明显脚软</span>`:'');
+      (p.energy<50?`<br><span style="color:var(--gold)">⚠️ 精力不足（${p.energy}），比赛中会明显脚软</span>`:'')+
+      (p.injury>0?`<br><span style="color:var(--red)">🏥 你有伤在身，还需伤停 ${p.injury} 轮</span>`:'');
   if(S.cupQ&&S.cupQ.length){
     const q=S.cupQ[0];
     if(q.comp==='fa')
-      $('hNext').innerHTML=`<b>🏆 足协杯 ${FA_STAGES[S.fa.stage]}</b><br><span style="color:var(--dim)">单场淘汰——战平将进入点球大战！</span>`+taskLine+warns;
+      $('hNext').innerHTML=`<b>🏆 ${faName()} ${FA_STAGES[S.fa.stage]}</b><br><span style="color:var(--dim)">单场淘汰——战平将进入点球大战！</span>`+taskLine+warns;
     else{
       const o=S.aclGroup.opps[S.aclGroup.idx];
-      $('hNext').innerHTML=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-weight:700">🌏 亚冠小组赛第${S.aclGroup.idx+1}场 <span style="color:var(--dim);font-weight:400">vs</span> ${badge(o,20)}${o.name}</div><span style="color:var(--dim)">对手实力 ${o.str} · 亚洲之巅的较量</span>`+taskLine+warns;
+      $('hNext').innerHTML=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-weight:700">🌏 ${contName()}小组赛第${S.aclGroup.idx+1}场 <span style="color:var(--dim);font-weight:400">vs</span> ${badge(o,20)}${o.name}</div><span style="color:var(--dim)">对手实力 ${o.str} · 洲际之巅的较量</span>`+taskLine+warns;
     }
     $('btnKick').textContent='踢杯赛';
     $('btnKick').style.display='';
@@ -479,6 +531,8 @@ function goHome(){
     $('hNext').innerHTML='<span style="color:var(--dim)">赛季已结束</span>';
     $('btnKick').style.display='none';
   }
+  if(p.injury>0&&$('btnKick').style.display!=='none')$('btnKick').textContent='🏥 伤停·跳过本轮';
+  renderTactic();
   $('hTp').textContent=`(${p.tp})`;
   renderTable();
   show('scHome');save();
@@ -509,14 +563,15 @@ function showTrain(){
 }
 function train(k){
   const p=S.player,c=costOf(p.attrs[k]);
-  if(p.tp>=c&&p.attrs[k]<95&&p.energy>=8){p.tp-=c;p.energy-=8;p.attrs[k]++;save()}
+  if(p.tp>=c&&p.attrs[k]<95&&p.energy>=8){p.tp-=c;p.energy-=8;p.attrs[k]++;
+    const got=checkPerks();save();if(got.length)perkToast(got)}
   showTrain();
 }
 
 /* ============ 生活与金钱 ============ */
 function calcWage(){
-  const base={3:1,2:6,1:30}[S.tier];
-  return Math.max(1,Math.round(base*(1+(overall()-55)/40)));
+  const base={3:1,2:6,1:30,0:150}[S.tier];
+  return Math.max(1,Math.round(base*(1+(overall()-55)/40)*(1+(S.player.wageUp||0))));
 }
 const ITEMS=[
  {id:'diet',   name:'私人营养师',   cost:20,  desc:'每周精力恢复 +8'},
@@ -557,9 +612,137 @@ function buyItem(id){
   save();showLife();
 }
 
+/* ============ 战术 ============ */
+const TACTICS={
+ atk:{n:'⚔️ 全力进攻',d:'我方进球↑ 对方进球↑ 关键机会+1'},
+ bal:{n:'⚖️ 均衡阵型',d:'稳扎稳打，不偏不倚'},
+ def:{n:'🛡️ 防守反击',d:'对方进球↓↓ 我方进球↓ 反击单刀更多'}};
+function setTactic(t){S.tactic=t;save();renderTactic()}
+function renderTactic(){
+  $('hTactic').innerHTML='<div class="row">'+Object.keys(TACTICS).map(k=>
+    `<button class="btn ${S.tactic===k?'':'ghost'} grow" style="padding:8px 6px;font-size:13px" onclick="setTactic('${k}')">${TACTICS[k].n}</button>`).join('')+
+    `</div><p style="color:var(--dim);font-size:12px;margin-top:6px">${TACTICS[S.tactic].d} · 🤝 队友默契 ${S.chem}（影响传球配合与助攻）</p>`;
+}
+
+/* ============ 特技 ============ */
+const PERKS=[
+ {id:'finisher',n:'冷静终结者',d:'精准射门区域扩大35%',cond:p=>p.attrs.sho>=85},
+ {id:'fkmaster',n:'任意球大师',d:'任意球人墙更矮，弧线更刁',cond:p=>p.attrs.sho>=78&&p.attrs.pas>=72},
+ {id:'bigheart',n:'大心脏',d:'时机滑块减速20%',cond:p=>p.attrs.men>=85},
+ {id:'flash',n:'闪电突袭',d:'盘带过人成功率大增',cond:p=>p.attrs.pac>=88||p.attrs.dri>=88},
+ {id:'engine',n:'中场发动机',d:'传球小游戏出球质量+15%',cond:p=>p.attrs.pas>=85},
+ {id:'ironman',n:'钢铁之躯',d:'伤病概率减半，比赛精力消耗-4',cond:p=>p.attrs.sta>=88},
+];
+const hasPerk=id=>S.player.perks&&S.player.perks.includes(id);
+function checkPerks(){
+  const p=S.player;let got=[];
+  PERKS.forEach(pk=>{if(!p.perks.includes(pk.id)&&pk.cond(p)){p.perks.push(pk.id);got.push(pk)}});
+  return got;
+}
+function perkToast(got){ // 训练页解锁提示
+  if(!got.length)return;
+  const pk=got[0];
+  $('evTitle').textContent='✨ 特技解锁！';
+  $('evText').innerHTML=`<b style="color:var(--gold)">${pk.n}</b><br>${pk.d}`;
+  $('evBtns').innerHTML='<button class="btn" onclick="$(\'evOverlay\').classList.add(\'hidden\')">帅！</button>';
+  $('evOverlay').classList.remove('hidden');
+}
+
+/* ============ 成就 ============ */
+const ACHS=[
+ {id:'first',n:'处子球',d:'打进生涯第一球',cond:p=>p.careerGoals>=1},
+ {id:'hat',n:'帽子戏法',d:'单场进3球',cond:()=>M&&M.goals>=3},
+ {id:'g20',n:'进球机器',d:'单赛季进20球',cond:p=>p.goals>=20},
+ {id:'g100',n:'百球先生',d:'生涯100球',cond:p=>p.careerGoals>=100},
+ {id:'g300',n:'射手之神',d:'生涯300球',cond:p=>p.careerGoals>=300},
+ {id:'a50',n:'助攻大师',d:'生涯50次助攻',cond:p=>p.careerAssists>=50},
+ {id:'app200',n:'常青树',d:'生涯出场200次',cond:p=>p.careerApps>=200},
+ {id:'ovr90',n:'世界级',d:'综合能力达到90',cond:()=>overall()>=90},
+ {id:'maxattr',n:'登峰造极',d:'任一属性练到95',cond:p=>Object.values(p.attrs).some(v=>v>=95)},
+ {id:'rich',n:'财富自由',d:'存款超过1000万',cond:p=>p.money>=1000},
+ {id:'super',n:'顶级舞台',d:'踢上中超联赛',cond:()=>S.tier<=1},
+ {id:'europe',n:'留洋先锋',d:'登陆欧洲联赛',cond:()=>S.tier===0},
+ {id:'pop90',n:'国民偶像',d:'人气达到90',cond:p=>p.pop>=90},
+ {id:'champ',n:'冠军之心',d:'夺得任意冠军',cond:p=>p.honors.some(h=>h.includes('冠军'))},
+ {id:'golden',n:'金球之夜',d:'荣膺金球奖',cond:p=>p.honors.some(h=>h.includes('金球'))},
+ {id:'family',n:'人生赢家',d:'结婚并有了孩子',cond:p=>p.love>=3&&p.child>0},
+];
+function checkAch(){
+  const p=S.player;let got=[];
+  ACHS.forEach(a=>{if(!p.ach[a.id]&&a.cond(p)){p.ach[a.id]=true;got.push(a)}});
+  return got;
+}
+
+/* ============ 生涯档案页 ============ */
+function showStats(){
+  const p=S.player;
+  const achHtml=ACHS.map(a=>`<div class="stat" style="opacity:${p.ach[a.id]?1:.35}"><b style="font-size:13px">${p.ach[a.id]?'🏅':'🔒'} ${a.n}</b><span>${a.d}</span></div>`).join('');
+  const perkHtml=p.perks.length?p.perks.map(id=>{const pk=PERKS.find(x=>x.id===id);return `<div class="stat"><b style="font-size:13px;color:var(--gold)">✨ ${pk.n}</b><span>${pk.d}</span></div>`}).join(''):'<p style="color:var(--dim);font-size:13px">暂无特技——把属性练上去自动解锁。</p>';
+  const hist=p.history.length?`<table style="margin-top:8px"><tr><th>季</th><th class="nm">球队</th><th>级别</th><th>场</th><th>球</th><th>助</th><th>评分</th><th>名次</th></tr>`+
+    p.history.map(h=>`<tr><td>${h.s}</td><td class="nm">${h.team}</td><td>${h.lg}</td><td>${h.apps}</td><td>${h.g}</td><td>${h.a}</td><td>${h.avg}</td><td>${h.pos}</td></tr>`).join('')+'</table>':'<p style="color:var(--dim);font-size:13px">完成第一个赛季后生成。</p>';
+  const loveTxt=['单身','恋爱中 💕','已订婚 💍','已婚 👨‍👩‍'][Math.min(p.love,3)]+(p.child?` · ${p.child}个孩子`:'');
+  $('stBody').innerHTML=
+    `<div class="stats" style="grid-template-columns:repeat(4,1fr)">
+      <div class="stat"><b>${p.careerApps}</b><span>生涯出场</span></div>
+      <div class="stat"><b>${p.careerGoals}</b><span>生涯进球</span></div>
+      <div class="stat"><b>${p.careerAssists}</b><span>生涯助攻</span></div>
+      <div class="stat"><b>${p.earnings}万</b><span>生涯总收入</span></div>
+    </div>
+    <p style="margin-top:10px;font-size:13.5px;line-height:1.9">💘 感情状态：${p.partner?p.partner+' · ':''}${loveTxt}<br>😈 宿敌：${S.nemesis?`${S.nemesis.n}（生涯${S.nemesis.g}球 vs 你${p.careerGoals}球）`:'—'}</p>
+    ${p.honors.length?`<p class="honor" style="margin-top:6px;line-height:1.9">🏆 ${p.honors.join('、')}</p>`:''}
+    <h2 style="margin-top:16px">✨ 特技</h2><div class="stats" style="grid-template-columns:repeat(2,1fr)">${perkHtml}</div>
+    <h2 style="margin-top:16px">🏅 成就（${Object.keys(p.ach).length}/${ACHS.length}）</h2><div class="stats" style="grid-template-columns:repeat(2,1fr)">${achHtml}</div>
+    <h2 style="margin-top:16px">📜 赛季履历</h2>${hist}`;
+  show('scStats');
+}
+
+/* ============ 伤停轮次 ============ */
+function skipInjured(){
+  const p=S.player;
+  p.injury--;
+  p.energy=clamp(p.energy+18,0,100);
+  let txt='';
+  if(S.cupQ&&S.cupQ.length){ // 杯赛只能看队友踢
+    const q=S.cupQ.shift();
+    const win=Math.random()<0.45;
+    if(q.comp==='fa'){
+      if(win){S.fa.stage++;if(S.fa.stage>4)S.fa.alive=false;txt=`${faName()}：队友们顶住了，晋级！`}
+      else{S.fa.alive=false;txt=`${faName()}：没有你的球队遗憾出局……`}
+    }else{
+      const g=S.aclGroup;g.pts+=win?3:0;g.rec.push(win?'胜(伤缺)':'负(伤缺)');g.idx++;
+      txt=`${contName()}小组赛：你在看台上看完了全场，球队${win?'赢了':'输了'}。`;
+    }
+  }else if(S.round<ROUNDS){
+    const fx=S.schedule[S.round];
+    const o=S.teams[fx.opp];
+    const gA=pois(clamp(1.1+(S.teams[0].str-o.str)*0.04,0.2,2.4)),gB=pois(clamp(1.3+(o.str-S.teams[0].str)*0.04,0.2,2.6));
+    addResult(0,gA,fx.opp,gB);
+    const rest=shuffle(Array.from({length:15},(_,i)=>i+1).filter(i=>i!==fx.opp));
+    for(let i=0;i<rest.length-1;i+=2){
+      const a=rest[i],b=rest[i+1];
+      addResult(a,pois(clamp(1.3+(S.teams[a].str-S.teams[b].str)*0.04,0.2,2.6)),
+                b,pois(clamp(1.3+(S.teams[b].str-S.teams[a].str)*0.04,0.2,2.6)));
+    }
+    S.round++;
+    if(S.rivals)S.rivals.forEach(r=>r.g+=pois(r.rate));
+    // 伤停期间杯赛照常排期
+    if(S.fa&&S.fa.alive&&S.fa.stage<=4&&FA_AFTER.includes(S.round))S.cupQ.push({comp:'fa'});
+    if(S.aclActive&&S.aclGroup&&S.aclGroup.idx<3&&ACL_AFTER.includes(S.round))S.cupQ.push({comp:'acl'});
+    txt=`联赛第${S.round}轮：你伤停缺席，球队 ${gA}:${gB} ${gA>gB?'获胜':gA===gB?'战平':'落败'}。`;
+  }
+  const over=S.round>=ROUNDS&&!(S.cupQ&&S.cupQ.length);
+  if(over)p.injury=0; // 赛季末强制复出
+  $('evTitle').textContent='🏥 伤停恢复中';
+  $('evText').innerHTML=`${txt}<br>队医：「${p.injury>0?`还需休养 ${p.injury} 轮。`:'下一场你可以复出了！'}」`;
+  $('evBtns').innerHTML=`<button class="btn" onclick="${over?'injSeasonEnd()':'closeEv()'}">${over?'查看赛季总结':'继续养伤'}</button>`;
+  $('evOverlay').classList.remove('hidden');
+  save();
+}
+function injSeasonEnd(){$('evOverlay').classList.add('hidden');EV=null;afterResult()}
+
 /* ============ 随机事件 ============ */
 // 事件效果全部为"活属性"：区间随机 + 按联赛级别/属性缩放 + 概率翻车
-const tf=()=>({3:1,2:2.5,1:6})[S.tier]; // 级别越高，钱的数目越大
+const tf=()=>({3:1,2:2.5,1:6,0:20})[S.tier]; // 级别越高，钱的数目越大
 const EVENTS=[
  {id:'media',title:'赛后专访',text:'记者把话筒递到你面前："对自己最近的表现怎么看？"',ch:[
    {l:'高调放话："我是这个联赛最强的前锋！"',f:p=>{
@@ -605,6 +788,72 @@ const EVENTS=[
    {l:'转发！配文"继续努力"',f:p=>{
      const po=ri(5,12),sc=ri(3,8);p.pop=clamp(p.pop+po,0,100);p.scout=clamp(p.scout+sc,0,100);
      return `全网都认识你了。人气+${po}，球探关注+${sc}`}}]},
+ /* ---- 恋爱与家庭链 ---- */
+ {id:'meet',title:'咖啡店的偶遇',cond:p=>p.love===0&&p.pop>=15,text:'常去的咖啡店里，一位叫林晚的女生认出了你："你是那个踢球的吧？我看过你的比赛！"她眼睛弯弯的，笑起来很好看。',ch:[
+   {l:'鼓起勇气要联系方式',f:p=>{
+     if(Math.random()<0.75){p.love=1;p.partner='林晚';const po=ri(1,3);p.pop=clamp(p.pop+po,0,100);
+       return '她犹豫了一下，笑着报出了号码。你的心跳得比点球大战还快——恋爱了！'}
+     const men=Math.random()<0.5&&p.attrs.men>40?1:0;if(men)p.attrs.men--;
+     return '"我有男朋友啦。"……好吧。'+(men?'心理-1，':'')+'脚下的球才不会拒绝你。'}},
+   {l:'笑笑就好，专心喝咖啡',f:p=>{const en=ri(2,4);p.energy=clamp(p.energy+en,0,100);return `平静的下午。精力+${en}`}}]},
+ {id:'date',title:'约会日',cond:p=>p.love===1,text:'林晚发来消息："周末有空吗？听说江边的夜市很好玩。"',ch:[
+   {l:'赴约（花费约2万）',cond:p=>p.money>=2,f:p=>{
+     p.money-=2;const en=ri(4,8),men=Math.random()<0.5&&p.attrs.men<95?1:0;
+     p.energy=clamp(p.energy+en,0,100);if(men)p.attrs.men++;
+     if(Math.random()<0.25){p.love=2;return '烟花下她靠在你肩上。你偷偷想：就是她了。（关系升温：可以求婚了）精力+'+en+(men?'，心理+1':'')}
+     return `开心的一天。精力+${en}${men?'，心理+1':''}`}},
+   {l:'推掉，备战要紧',f:p=>{
+     if(Math.random()<0.3){p.love=0;p.partner='';return '第三次被推掉后，她发来长长一段话……你们和平分手了。'}
+     const tr=ri(1,3);p.trust=clamp(p.trust+tr,5,99);return `她说理解你。信任+${tr}，但她的消息变少了。`}}]},
+ {id:'propose',title:'重要的决定',cond:p=>p.love===2&&p.money>=30,text:'交往已久，你在珠宝店橱窗前驻足。那枚戒指标价30万。',ch:[
+   {l:'买下它，求婚！',f:p=>{
+     p.money-=30;p.love=3;const po=ri(8,15);p.pop=clamp(p.pop+po,0,100);
+     return '她哭着说了"我愿意"。婚礼上全队都来了，教练喝得最多。人气+'+po+'，从此有人在看台为你留灯。'}},
+   {l:'再等等，现在还不是时候',f:p=>'你转身离开了橱窗。戒指还在，机会也还在。'}]},
+ {id:'baby',title:'新生命',cond:p=>p.love===3&&p.child===0&&p.age>=22,text:'林晚把一张B超照片递到你面前，眼里闪着光。',ch:[
+   {l:'我要当爸爸了！',f:p=>{
+     p.child=1;const men=Math.min(3,95-p.attrs.men);p.attrs.men+=men;const po=ri(5,10);p.pop=clamp(p.pop+po,0,100);
+     return `为了怀里的小家伙，每一场都值得拼尽全力。心理+${men}，人气+${po}`}}]},
+ /* ---- 宿敌与更多事件 ---- */
+ {id:'taunt',title:'宿敌的挑衅',cond:()=>S.nemesis&&S.player.careerApps>=10,text:()=>`${S.nemesis.n}在采访中被问到你，他撇了撇嘴："他？还差得远呢。"`,ch:[
+   {l:'转发并回击："球场上见。"',f:p=>{
+     const po=ri(3,8);p.pop=clamp(p.pop+po,0,100);
+     const fm=ri(5,12);p.form=clamp(p.form+fm,0,100);
+     return `火药味拉满，全网坐等你们交手。人气+${po}，状态+${fm}（你憋着一股劲）`}},
+   {l:'不回应，用进球说话',f:p=>{const men=Math.random()<0.7&&p.attrs.men<95?1:0;if(men)p.attrs.men++;
+     return men?'沉默是最好的回答。心理+1':'你关掉了热搜。'}}]},
+ {id:'captain',title:'队长袖标',cond:p=>p.trust>=80&&p.age>=22,text:()=>`${S.coach}指导把你叫到办公室，桌上放着队长袖标："下赛季，队伍交给你。"`,ch:[
+   {l:'郑重接过袖标',f:p=>{
+     const men=Math.min(2,95-p.attrs.men);p.attrs.men+=men;S.chem=clamp(S.chem+8,35,100);
+     return `你成为了更衣室的主心骨。心理+${men}，队友默契+8`}},
+   {l:'"我觉得老队长更合适。"',f:p=>{const tr=ri(2,4);p.trust=clamp(p.trust+tr,5,99);return `谦逊赢得尊重。信任+${tr}`}}]},
+ {id:'gamble',title:'危险的邀约',cond:p=>p.pop>=30,text:'一个陌生号码发来消息，许诺"只要下半场表现差一点"，就有一大笔钱。',ch:[
+   {l:'立刻举报！',f:p=>{
+     const po=ri(5,10),tr=ri(3,6);p.pop=clamp(p.pop+po,0,100);p.trust=clamp(p.trust+tr,5,99);
+     return `足协通报表扬了你的职业操守。人气+${po}，信任+${tr}`}},
+   {l:'删掉消息，当没看见',f:p=>'你删掉了消息。有些门，看一眼都嫌脏。'}]},
+ {id:'oldmate',title:'老友重逢',cond:p=>p.season>=3,text:'客场比赛前，你在酒店大堂遇到了青训时期的老队友——他没能踢出来，现在做青训教练。',ch:[
+   {l:'请他吃饭，聊到深夜',f:p=>{
+     const men=Math.random()<0.6&&p.attrs.men<95?1:0;if(men)p.attrs.men++;
+     const en=ri(2,5);p.energy=clamp(p.energy-en,0,100);
+     return `"替我们这些没踢出来的，好好踢。"${men?'心理+1，':''}精力-${en}，但有些话比休息更重要。`}},
+   {l:'合影寒暄，早些休息',f:p=>{const en=ri(2,4);p.energy=clamp(p.energy+en,0,100);return `职业为先。精力+${en}`}}]},
+ {id:'stream',title:'直播邀请',cond:p=>p.pop>=50,text:'平台邀请你做一场直播连麦，出场费不低，但直播说错话容易翻车。',ch:[
+   {l:'播！和球迷唠一小时',f:p=>{
+     const mo=Math.round(ri(5,10)*tf());p.money+=mo;p.earnings+=mo;
+     if(Math.random()<0.2){const po=ri(3,7);p.pop=clamp(p.pop-po,0,100);return `口误上了热搜……+${mo}万，但人气-${po}`}
+     const po=ri(4,9);p.pop=clamp(p.pop+po,0,100);return `直播间人气爆棚！+${mo}万，人气+${po}`}},
+   {l:'婉拒',f:p=>'专注赛场，机会还会再来。'}]},
+ {id:'boots',title:'球鞋赞助升级',cond:p=>p.pop>=45&&p.scout>=40,text:'装备赞助商送来一双为你定制的限量球鞋，鞋舌上绣着你的名字。',ch:[
+   {l:'穿上它踢下一场',f:p=>{
+     const fm=ri(6,12);p.form=clamp(p.form+fm,0,100);const po=ri(2,5);p.pop=clamp(p.pop+po,0,100);
+     return `脚感好得不像话。状态+${fm}，人气+${po}`}}]},
+ {id:'hometown',title:'家乡的邀请',cond:p=>p.pop>=35&&p.season>=2,text:'家乡的小学邀请你回去给孩子们上一堂足球课，母校的老校长亲自打来电话。',ch:[
+   {l:'回去！给孩子们上课',f:p=>{
+     const po=ri(4,9),en=ri(3,6);p.pop=clamp(p.pop+po,0,100);p.energy=clamp(p.energy-en,0,100);
+     const men=Math.random()<0.5&&p.attrs.men<95?1:0;if(men)p.attrs.men++;
+     return `操场上全是追着球跑的孩子，像极了当年的你。人气+${po}${men?'，心理+1':''}，精力-${en}`}},
+   {l:'寄一箱签名足球过去',f:p=>{p.money-=1;const po=ri(1,3);p.pop=clamp(p.pop+po,0,100);return `孩子们收到球很开心。花费1万，人气+${po}`}}]},
 ];
 let EV=null;
 function showEvent(){
@@ -612,7 +861,7 @@ function showEvent(){
   const pool=EVENTS.filter(e=>!e.cond||e.cond(p));
   EV=rnd(pool);
   $('evTitle').textContent=EV.title;
-  $('evText').textContent=EV.text;
+  $('evText').textContent=typeof EV.text==='function'?EV.text():EV.text;
   $('evBtns').innerHTML=EV.ch.map((c,i)=>(!c.cond||c.cond(p))?`<button class="evbtn" onclick="chooseEv(${i})">${c.l}</button>`:'').join('');
   $('evOverlay').classList.remove('hidden');
 }
@@ -628,6 +877,7 @@ function log(txt,cls){const el=document.createElement('p');if(cls)el.className=c
 const CN_NT={name:'中国',ab:'中',c1:'#b04a4a',c2:'#7d3030'};
 function ntStr(){return clamp(72+(overall()-70)*0.5,68,90)}
 function startMatch(){ // 联赛/杯赛入口
+  if(S.player.injury>0){skipInjured();return}
   if(S.cupQ&&S.cupQ.length){beginClubCup(S.cupQ[0]);return}
   const fx=S.schedule[S.round];
   beginMatch({opp:S.teams[fx.opp],oppIdx:fx.opp,home:fx.home,cup:null});
@@ -636,7 +886,8 @@ function beginClubCup(q){
   let opp;
   if(q.comp==='fa'){ // 抽签：越到后面对手越强
     const st=S.fa.stage;
-    const tier=st<=0?3:st===1?2:st===2?(Math.random()<0.5?2:1):1;
+    let tier=st<=0?3:st===1?2:st===2?(Math.random()<0.5?2:1):1;
+    if(S.tier===0)tier=0;
     const o=rnd(TIERS[tier].pool.filter(x=>x.n!==S.teams[0].name));
     opp={name:o.n,ab:o.ab,c1:o.c1,c2:o.c2,str:TIERS[tier].base+(st>=3?14:6)+Math.floor(Math.random()*8)};
   }else opp=S.aclGroup.opps[S.aclGroup.idx];
@@ -645,8 +896,10 @@ function beginClubCup(q){
 function beginMatch(cfg){
   const opp=cfg.opp,A=S.player.attrs,p=S.player;
   const myStr=cfg.cup?ntStr():S.teams[0].str+(overall()-55)*0.35+((cfg.home||p.items.jet)?2:0);
-  const lamT=clamp(1.15+(myStr-opp.str)*0.045,0.15,2.6);
-  const lamO=clamp(1.15+(opp.str-myStr)*0.045,0.15,2.6);
+  const tac=cfg.cup?'bal':(S.tactic||'bal');
+  const tAdj=tac==='atk'?[0.3,0.28]:tac==='def'?[-0.22,-0.42]:[0,0];
+  const lamT=clamp(1.15+(myStr-opp.str)*0.045+tAdj[0],0.15,2.6);
+  const lamO=clamp(1.15+(opp.str-myStr)*0.045+tAdj[1],0.15,2.6);
   const eF=clamp(p.energy/100,0.4,1);
   M={fx:{home:cfg.home,opp:cfg.oppIdx},opp,cup:cfg.cup,club:cfg.club||null,min:0,gT:0,gO:0,goals:0,assists:0,shots:0,saved:0,missed:0,keyp:0,badpass:0,evs:[],ei:0,timer:null,
      gk:Math.round(opp.str+Math.random()*8-3),
@@ -658,8 +911,9 @@ function beginMatch(cfg){
   const pickMin=lo=>{let m;do{m=lo+Math.floor(Math.random()*(88-lo))}while(usedMin.has(m));usedMin.add(m);return m};
   for(let i=0;i<pois(lamT*0.55);i++)M.evs.push({min:pickMin(4),t:'tg'});
   for(let i=0;i<pois(lamO);i++)M.evs.push({min:pickMin(4),t:'og'});
-  let nK=M.bench?2:3+((A.dri+A.pac>=130)?1:0)+(Math.random()<0.45?1:0)+(p.trust>=70?1:0)-(eF<0.7?1:0)+(p.items.analyst?1:0);
+  let nK=M.bench?2:3+((A.dri+A.pac>=130)?1:0)+(Math.random()<0.45?1:0)+(p.trust>=70?1:0)-(eF<0.7?1:0)+(p.items.analyst?1:0)+(tac==='atk'?1:0);
   nK=Math.max(1,nK);
+  M.tac=tac; // 防反：反击单刀概率更高（openKey中使用）
   for(let i=0;i<nK;i++)M.evs.push({min:pickMin(M.bench?58:4),t:'key'});
   for(let m=8;m<90;m+=9+Math.floor(Math.random()*5))if(!usedMin.has(m))M.evs.push({min:m,t:'fl'});
   M.evs.sort((a,b)=>a.min-b.min);
@@ -672,8 +926,8 @@ function beginMatch(cfg){
   const cm=shuffle(COMMS);
   log(`本场解说：${cm[0]}、${cm[1]}`,'d');
   if(cfg.cup)log(`${NT[cfg.cup].name}小组赛第${S.cup.idx+1}场：中国队对阵 ${opp.name}（实力${opp.str}）！`,'y');
-  else if(cfg.club==='fa')log(`足协杯${FA_STAGES[S.fa.stage]}：对阵 ${opp.name}（实力${opp.str}）——单场定胜负！`,'y');
-  else if(cfg.club==='acl')log(`亚冠小组赛第${S.aclGroup.idx+1}场：对阵 ${opp.name}（实力${opp.str}）！`,'y');
+  else if(cfg.club==='fa')log(`${faName()}${FA_STAGES[S.fa.stage]}：对阵 ${opp.name}（实力${opp.str}）——单场定胜负！`,'y');
+  else if(cfg.club==='acl')log(`${contName()}小组赛第${S.aclGroup.idx+1}场：对阵 ${opp.name}（实力${opp.str}）！`,'y');
   else log(`比赛开始！${cfg.home?'主':'客'}场对阵 ${opp.name}（实力${opp.str} · 门将评分${M.gk}）`,'d');
   if(M.fb>0)log('你最近状态火热，脚感发烫！（属性+3）','g');
   if(M.fb<0)log('近期低迷的状态让你有些犹豫……（属性-3）','b');
@@ -702,7 +956,7 @@ function handleEvent(e){
   const A=S.player.attrs;
   if(e.t==='tg'){
     M.gT++;updBoard();
-    if(Math.random()<A.pas/140){M.assists++;log(`${M.min}' 你送出致命直塞，${rnd(S.mates)}冷静推射破门！（助攻+1）`,'g')}
+    if(Math.random()<A.pas/140+(S.chem-40)/300){M.assists++;log(`${M.min}' 你送出致命直塞，${rnd(S.mates)}冷静推射破门！（助攻+1）`,'g')}
     else log(`${M.min}' ${rnd(S.mates)}为球队破门得分！`,'g');
   }else if(e.t==='og'){
     M.gO++;updBoard();
@@ -713,23 +967,32 @@ function handleEvent(e){
 /* ============ 射门小游戏（瞄准+时机） ============ */
 const cv=$('cv'),ctx=cv.getContext('2d');
 const GOAL={x1:72,x2:408,y1:72,y2:250};
-function preciseW(){return Math.max(5,(S.player.attrs.sho+(M&&M.fb||0))*0.3-8)} // 精准区半宽，射门越高越宽
+function preciseW(){let w=Math.max(5,(S.player.attrs.sho+(M&&M.fb||0))*0.3-8);if(hasPerk('finisher'))w*=1.35;return w} // 精准区半宽，射门越高越宽
 function openKey(){
-  if(Math.random()<0.35)openPass();else openShot();
+  const r=Math.random();
+  if(r<0.26)openPass();
+  else if(r<0.44)openDribble();
+  else if(r<0.55)openShot(FK_SITU);
+  else if(M.tac==='def'&&r<0.75)openShot(SITUS[0]); // 防反：反击单刀
+  else openShot();
 }
 function openShot(forceSitu){
   const situ=forceSitu||rnd(SITUS);
   const A=S.player.attrs;
   let bspd=situ.bspd*(1.45-A.men*0.007)*M.bFac; // 心理高→滑块慢；精力低→滑块快
   if(M.min>60&&A.sta<70)bspd*=1.18;             // 体能差→下半场滑块变快
+  if(hasPerk('bigheart'))bspd*=0.8;             // 大心脏：滑块减速
   G={mode:'shot',situ,bspd,phase:0,t:Math.random()*100,mx:240,my:160,aimX:0,aimY:0,
-     marker:90,dir:1,kx:240,kxF:0,precise:false,ball:null,res:null,anim:0,animLen:22};
+     marker:90,dir:1,kx:240,kxF:0,precise:false,ball:null,res:null,anim:0,animLen:22,
+     wallX:situ.id==='fk'?240+ri(-45,45):0,wallW:situ.id==='fk'?(hasPerk('fkmaster')?32:46):0};
   $('gTitle').textContent=`${M.min}' 关键时刻 · ${situ.name}`;
-  $('gHint').textContent='第一步：点击球门，选择射门落点';
+  $('gHint').textContent=situ.id==='fk'?'第一步：点击球门选落点——绕开人墙，贴地或吊射死角！':'第一步：点击球门，选择射门落点';
   $('gBtns').innerHTML='';
   $('overlay').classList.remove('hidden');
-  requestAnimationFrame(loopG);
+  startLoop();
 }
+let LOOP=0;
+function startLoop(){LOOP++;const id=LOOP;requestAnimationFrame(()=>loopG(id))}
 function cvPos(e){
   const r=cv.getBoundingClientRect();
   return{x:(e.clientX-r.left)*cv.width/r.width,y:(e.clientY-r.top)*cv.height/r.height};
@@ -738,6 +1001,7 @@ cv.addEventListener('mousemove',e=>{if(!G)return;const p=cvPos(e);G.mx=p.x;G.my=
 cv.addEventListener('click',e=>{
   if(!G)return;const p=cvPos(e);
   if(G.mode==='pass'){passClick(p);return}
+  if(G.mode==='drib'){dribClick(p);return}
   if(G.phase===0){
     G.aimX=clamp(p.x,GOAL.x1+6,GOAL.x2-6);G.aimY=clamp(p.y,GOAL.y1+6,GOAL.y2-8);
     G.phase=1;
@@ -757,6 +1021,7 @@ function shoot(){
   M.shots++;
   G.animLen=Math.max(16,30-Math.round(sho*0.15)); // 射门高→球速快
   let res;
+  if(situ.id==='fk'&&!G.precise&&Math.abs(bx-G.wallX)<G.wallW&&by>168){res='block';G.ball={x:bx,y:262};G.res=res;G.phase=2;G.anim=0;G.animLen=10;return} // 打在人墙上（精准射门可绕过）
   if(bx<GOAL.x1||bx>GOAL.x2||by<GOAL.y1)res='miss';
   else{
     let D=situ.reach*(135*(1.35-0.55*q)+45)*(1.06-sho*0.0035)*(0.78+M.gk*0.005)*(0.8+0.4*Math.random());
@@ -778,12 +1043,13 @@ function finishKey(){
   }
   else if(res==='save'){M.saved++;log(`${M.min}' ${S.player.name}的射门角度太正，被门将扑出！`,'y')}
   else if(res==='wow'){M.saved++;log(`${M.min}' 不可思议！对方门将飞身神扑，救下必进球！`,'y')}
+  else if(res==='block'){M.saved++;log(`${M.min}' ${S.player.name}的任意球狠狠打在人墙上弹出！`,'y')}
   else{M.missed++;log(`${M.min}' 可惜！${S.player.name}的射门偏出了球门。`,'y')}
   G=null;$('overlay').classList.add('hidden');
   runTimer();
 }
-function loopG(){
-  if(!G)return;
+function loopG(id){
+  if(!G||id!==LOOP)return;
   G.t++;
   if(G.mode==='pass'){
     drawP();
@@ -795,7 +1061,27 @@ function loopG(){
         $('gBtns').innerHTML='<button class="btn" onclick="finishPass()">继续比赛</button>';
       }
     }
-    requestAnimationFrame(loopG);
+    requestAnimationFrame(()=>loopG(id));
+    return;
+  }
+  if(G.mode==='drib'){
+    drawD();
+    if(G.phase===2){
+      G.anim++;
+      if(G.anim===30){
+        if(G.res==='win'){
+          $('gHint').innerHTML='<b style="color:var(--green);font-size:16px">⚡ 过掉了！单刀在前！</b>';
+          $('gBtns').innerHTML='<button class="btn" onclick="dribShot()">杀入禁区，射门！</button>';
+        }else if(G.res==='foul'){
+          $('gHint').innerHTML='<b style="color:var(--gold);font-size:16px">对方被迫犯规——任意球！</b>';
+          $('gBtns').innerHTML='<button class="btn" onclick="dribFK()">主罚任意球</button>';
+        }else{
+          $('gHint').innerHTML='<b style="color:var(--red);font-size:16px">被后卫看穿，球被捅走了…</b>';
+          $('gBtns').innerHTML='<button class="btn" onclick="finishDrib()">继续比赛</button>';
+        }
+      }
+    }
+    requestAnimationFrame(()=>loopG(id));
     return;
   }
   if(G.phase<2)G.kx=240+95*Math.sin(G.t*G.situ.kspd);
@@ -808,14 +1094,14 @@ function loopG(){
   if(G.phase===2){
     G.anim++;
     if(G.anim===G.animLen+6){
-      const map={goal:['⚽ 球进了！！！','var(--green)'],save:['被门将扑出！','var(--gold)'],wow:['门将神扑！','var(--gold)'],miss:['射偏了…','var(--red)']};
+      const map={goal:['⚽ 球进了！！！','var(--green)'],save:['被门将扑出！','var(--gold)'],wow:['门将神扑！','var(--gold)'],miss:['射偏了…','var(--red)'],block:['被人墙挡住！','var(--red)']};
       let txt=map[G.res][0];
       if(G.precise&&G.res==='goal')txt='🎯 精准射门！'+txt;
       $('gHint').innerHTML=`<b style="color:${map[G.res][1]};font-size:16px">${txt}</b>`;
       $('gBtns').innerHTML='<button class="btn" onclick="finishKey()">继续比赛</button>';
     }
   }
-  requestAnimationFrame(loopG);
+  requestAnimationFrame(()=>loopG(id));
 }
 
 /* ---------- 传球小游戏 ---------- */
@@ -828,7 +1114,7 @@ function openPass(){
   $('gHint').textContent='队友前插！等防守人横移让开线路，点击队友送出直塞';
   $('gBtns').innerHTML='';
   $('overlay').classList.remove('hidden');
-  requestAnimationFrame(loopG);
+  startLoop();
 }
 function defX(m){return m.x+38*Math.sin(G.t*m.spd+m.ph)}
 function passClick(p){
@@ -838,7 +1124,7 @@ function passClick(p){
   if(idx<0)return;
   const A=S.player.attrs,m=G.mates[idx];
   const open=Math.abs(defX(m)-m.x)/38; // 防守人离开线路的程度
-  G.q=clamp(open*0.55+A.pas/100*0.45+g()*0.12,0,1);
+  G.q=clamp(open*0.55+A.pas/100*0.45+g()*0.12+(S.chem-40)/250+(hasPerk('engine')?0.15:0),0,1);
   G.pick=idx;G.phase=2;G.anim=0;
   if(Math.random()<(1-G.q)*0.5)G.res='cut';
   else{
@@ -853,6 +1139,77 @@ function finishPass(){
   else{M.badpass++;log(`${M.min}' 你的传球线路被后卫识破，断掉了。`,'y')}
   G=null;$('overlay').classList.add('hidden');
   runTimer();
+}
+/* ---------- 盘带过人小游戏 ---------- */
+function openDribble(){
+  G={mode:'drib',phase:0,t:0,anim:0,res:null,side:0,
+     lspd:0.055+Math.random()*0.05,ph:Math.random()*6.28};
+  $('gTitle').textContent=`${M.min}' 关键时刻 · 1v1盘带过人`;
+  $('gHint').textContent='后卫堵在你身前——看准他重心偏移的瞬间，点击另一侧突破！';
+  $('gBtns').innerHTML='';
+  $('overlay').classList.remove('hidden');
+  startLoop();
+}
+function dribLean(){return Math.sin(G.t*G.lspd+G.ph)} // 正=后卫重心偏右
+function dribClick(p){
+  if(G.phase!==0)return;
+  const side=p.x<240?-1:1;
+  const lean=dribLean(),A=S.player.attrs;
+  const read=(-Math.sign(lean)===side?1:-1)*Math.abs(lean); // 反重心突破的读取质量
+  const pWin=clamp(0.30+read*0.42+((A.dri+A.pac)/2-60)*0.008+(hasPerk('flash')?0.15:0)+(M.fb>0?0.04:M.fb<0?-0.04:0),0.05,0.95);
+  G.side=side;G.phase=2;G.anim=0;
+  const r=Math.random();
+  G.res=r<pWin?'win':(r<pWin+0.18?'foul':'lose');
+}
+function dribShot(){log(`${M.min}' 一记漂亮的变向！${S.player.name}过掉后卫杀入禁区！`,'g');G=null;openShot(SITUS[0])}
+function dribFK(){log(`${M.min}' 后卫被晃得重心全失，只能将你放倒——前场任意球！`,'y');G=null;openShot(FK_SITU)}
+function finishDrib(){
+  log(`${M.min}' ${S.player.name}的突破被后卫化解，球权丢失。`,'y');
+  G=null;$('overlay').classList.add('hidden');
+  runTimer();
+}
+function drawD(){
+  ctx.clearRect(0,0,480,330);
+  const gr=ctx.createLinearGradient(0,0,0,330);
+  gr.addColorStop(0,'#2f5c42');gr.addColorStop(1,'#1e3d2a');
+  ctx.fillStyle=gr;ctx.fillRect(0,0,480,330);
+  for(let i=0;i<8;i++){ctx.fillStyle=i%2?'rgba(255,255,255,.035)':'transparent';ctx.fillRect(0,i*42,480,42)}
+  ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=2;
+  ctx.strokeRect(110,0,260,78);
+  ctx.strokeStyle='#fff';ctx.lineWidth=4;ctx.strokeRect(186,2,108,16);
+  const lean=G.phase===0?dribLean():0;
+  // 两侧突破提示区
+  if(G.phase===0){
+    const a=0.06+0.10*Math.max(0,-lean),b=0.06+0.10*Math.max(0,lean);
+    ctx.fillStyle=`rgba(87,184,123,${a})`;ctx.fillRect(0,90,200,240);
+    ctx.fillStyle=`rgba(87,184,123,${b})`;ctx.fillRect(280,90,200,240);
+    ctx.fillStyle='rgba(255,255,255,.55)';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
+    ctx.fillText('← 左路突破',100,315);ctx.fillText('右路突破 →',380,315);
+  }
+  // 后卫（红）：重心偏移
+  if(G.phase<2)drawMini(240+lean*30,150,'#b56f63','#8a4b41','#402c28',G.t*0.14,1);
+  else{ // 结果动画
+    const p1=Math.min(G.anim/26,1);
+    if(G.res==='win'){
+      drawMini(240-G.side*24*p1,150+8*p1,'#b56f63','#8a4b41','#402c28',1.5,1); // 被晃倒方向错误
+      drawMini(240+G.side*70*p1,286-150*p1,'#f8fafc','#cbd5e1','#31473a',G.t*0.25,1);
+      drawBall2(240+G.side*70*p1+10,286-150*p1+24,6);
+    }else if(G.res==='foul'){
+      drawMini(240+G.side*30*p1,150+20*p1,'#b56f63','#8a4b41','#402c28',2.2,1);
+      drawMini(240+G.side*40*p1,286-100*p1,'#f8fafc','#cbd5e1','#31473a',p1>0.7?2.8:G.t*0.25,1);
+      if(p1>=1){ctx.fillStyle='#f5d90a';ctx.font='bold 22px sans-serif';ctx.textAlign='center';ctx.fillText('🟨 犯规！',240,120)}
+    }else{
+      drawMini(240+lean*10,150,'#b56f63','#8a4b41','#402c28',G.t*0.14,1);
+      drawBall2(240-G.side*60*p1,220-60*p1,6); // 球被捅走
+      drawMini(240+G.side*30*p1,286-40*p1,'#f8fafc','#cbd5e1','#31473a',G.t*0.1,1);
+    }
+  }
+  if(G.phase<2){
+    drawMini(240,286,'#f8fafc','#cbd5e1','#31473a',Math.sin(G.t*0.08),1);
+    drawBall2(252,308,6.5);
+    namePill(240,244,'你',false);
+    namePill(240+lean*30,108,'后卫',false);
+  }
 }
 function drawMini(x,y,c1,c2,shorts,run,sc){
   // 迷你球员：run为摆腿相位，sc缩放
@@ -1009,6 +1366,17 @@ function drawG(){
   roundRect(kx-26,108,52,17,8);
   ctx.fillStyle='#d8b76a';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
   ctx.fillText('GK '+M.gk,kx,120);
+  // 任意球人墙
+  if(G.situ&&G.situ.id==='fk'){
+    const jump=G.phase===2?Math.max(0,9-Math.abs(G.anim-4)*2.2):0;
+    const n=hasPerk('fkmaster')?3:4,sp=hasPerk('fkmaster')?20:22;
+    for(let i=0;i<n;i++)
+      drawMini(G.wallX+(i-(n-1)/2)*sp,268-jump,'#8a6a5a','#5f463c','#2a2118',Math.sin(G.t*0.04+i)*0.5,0.82);
+    ctx.fillStyle='rgba(0,0,0,.5)';
+    roundRect(G.wallX-28,292,56,15,7);
+    ctx.fillStyle='#eee';ctx.font='bold 10px sans-serif';ctx.textAlign='center';
+    ctx.fillText('人墙',G.wallX,303);
+  }
   // 瞄准
   if(G.phase===0){
     const ax=clamp(G.mx,GOAL.x1+6,GOAL.x2-6),ay=clamp(G.my,GOAL.y1+6,GOAL.y2-8);
@@ -1125,8 +1493,14 @@ function endMatch(){
   rating=Math.round(clamp(rating,4,10)*10)/10;
   const tpGain=Math.max(0,Math.floor(rating-5.5))+M.goals;
   // 精力消耗 & 信任变化
-  const eCost=Math.round((M.bench?18:30)-p.attrs.sta*0.1-(p.items.physio?6:0)-(p.items.jet?4:0));
+  const eCost=Math.round((M.bench?18:30)-p.attrs.sta*0.1-(p.items.physio?6:0)-(p.items.jet?4:0)-(hasPerk('ironman')?4:0));
   p.energy=clamp(p.energy-eCost,0,100);
+  // 伤病风险：精力越低越危险
+  let injNote='';
+  if(p.injury===0&&Math.random()<(p.energy<30?0.12:p.energy<55?0.05:0.02)*(hasPerk('ironman')?0.5:1)){
+    p.injury=ri(1,3);
+    injNote=`<br><span style="color:var(--red)">🏥 ${rnd(['冲刺时拉伤了大腿','争顶落地扭伤脚踝','被对方铲伤了小腿'])}——伤停 ${p.injury} 轮！</span>`;
+  }
   // 收入与人气（周薪+赞助+股份分红）
   const income=p.wage+(p.sponsor.weekly||0)+(p.items.shares?Math.round(S.teams[0].str*0.5):0);
   p.money+=income;p.earnings+=income;
@@ -1141,8 +1515,10 @@ function endMatch(){
   p.careerApps++;p.careerGoals+=M.goals;p.careerAssists+=M.assists;
   // 状态热度 & 射手榜推进
   p.form=clamp(p.form+(rating>=7.5?12:rating>=6.5?4:rating<6?-12:-4),0,100);
+  S.chem=clamp(S.chem+(win?2:draw?1:0)+(M.assists>0?1:0),35,100);
   if(S.rivals)S.rivals.forEach(r=>r.g+=pois(r.rate));
   S.round++;
+  const newAch=checkAch(),newPerks=checkPerks();
   $('lb3').textContent='射门';$('lb4').textContent='获得训练点';
   // 渲染
   $('rScore').textContent=(M.fx.home?`${M.gT} : ${M.gO}`:`${M.gO} : ${M.gT}`);
@@ -1154,8 +1530,10 @@ function endMatch(){
   $('rShots').textContent=M.shots;
   $('rTp').textContent='+'+tpGain;
   const perf=rating>=8.5?'🌟 全场最佳表现！球探席上有人频频记录…':rating>=7?'教练对你的表现很满意。':rating<5.5?'表现低迷，下场要拿出态度。':'';
+  const achNote=newAch.map(a=>`<br><span style="color:var(--gold)">🏅 解锁成就【${a.n}】</span>`).join('')+
+    newPerks.map(pk=>`<br><span style="color:var(--gold)">✨ 解锁特技【${pk.n}】${pk.d}</span>`).join('');
   $('rNote').innerHTML=(perf?perf+'<br>':'')+
-    `教练信任 <b style="color:var(--blue)">${p.trust}</b>（${tDelta>=0?'+':''}${tDelta}） · 精力剩余 <b style="color:var(--gold)">${p.energy}</b> · 球探关注 <b style="color:var(--green)">${p.scout}</b><br>本周收入 <b style="color:var(--gold)">+${income}万</b>（存款 ${p.money}万）`;
+    `教练信任 <b style="color:var(--blue)">${p.trust}</b>（${tDelta>=0?'+':''}${tDelta}） · 精力剩余 <b style="color:var(--gold)">${p.energy}</b> · 球探关注 <b style="color:var(--green)">${p.scout}</b><br>本周收入 <b style="color:var(--gold)">+${income}万</b>（存款 ${p.money}万）`+injNote+achNote;
   $('rSeason').innerHTML='';
   $('rBtn').textContent=S.round>=ROUNDS?'查看赛季总结':'继续';
   $('rBtn').onclick=afterResult;
@@ -1198,21 +1576,21 @@ function settleClub(penWin){
   p.careerGoals+=M.goals;p.careerAssists+=M.assists;p.careerApps++;
   let head='',note='';
   if(M.club==='fa'){
-    const st=S.fa.stage;
+    const st=S.fa.stage,mult=S.tier===0?10:1;
     if(win){
-      const pr=FA_PRIZE[st];p.money+=pr;p.earnings+=pr;
+      const pr=FA_PRIZE[st]*mult;p.money+=pr;p.earnings+=pr;
       note=`晋级奖金 +${pr}万！`;
-      if(st===4){p.honors.push(`第${p.season}季足协杯冠军`);note='👑 足协杯冠军！奖金 +100万！';p.pop=clamp(p.pop+12,0,100)}
+      if(st===4){p.honors.push(`第${p.season}季${faName()}冠军`);note=`👑 ${faName()}冠军！奖金 +${100*mult}万！`;p.pop=clamp(p.pop+12,0,100)}
       S.fa.stage++;
       if(S.fa.stage>4)S.fa.alive=false;
-    }else{S.fa.alive=false;note='足协杯之旅结束。'}
-    head=`足协杯${FA_STAGES[st]} vs ${M.opp.name} · ${win?'晋级！🎉':'出局'}${penWin!==undefined?'（点球）':''}`;
+    }else{S.fa.alive=false;note=`${faName()}之旅结束。`}
+    head=`${faName()}${FA_STAGES[st]} vs ${M.opp.name} · ${win?'晋级！🎉':'出局'}${penWin!==undefined?'（点球）':''}`;
   }else{
     const g=S.aclGroup;
     g.pts+=win?3:draw?1:0;
     g.rec.push(`${win?'胜':draw?'平':'负'}${M.opp.name} ${M.gT}:${M.gO}`);
     g.idx++;
-    head=`亚冠小组赛 vs ${M.opp.name} · ${win?'胜利 🎉':draw?'战平':'告负'}（积${g.pts}分）`;
+    head=`${contName()}小组赛 vs ${M.opp.name} · ${win?'胜利 🎉':draw?'战平':'告负'}（积${g.pts}分）`;
     note=g.idx>=3?'小组赛踢完，出线结果赛季末揭晓。':'';
   }
   $('rScore').textContent=`${M.gT} : ${M.gO}`;
@@ -1348,6 +1726,7 @@ function genOffers(pos,avg){
   if(p.scout>=25&&avg>=6.8)pick(S.tier,myStr+4+Math.floor(Math.random()*5));            // 同级强队
   if(p.scout>=45&&avg>=7.0&&S.tier>1)pick(S.tier-1,TIERS[S.tier-1].base+4+Math.floor(Math.random()*6)); // 上级中游
   if(p.scout>=70&&avg>=7.4&&S.tier>1)pick(S.tier-1,TIERS[S.tier-1].base+12+Math.floor(Math.random()*8));// 上级豪门
+  if(S.tier===1&&p.scout>=80&&avg>=7.3&&overall()>=82)pick(0,TIERS[0].base+2+Math.floor(Math.random()*8)); // 留洋欧洲！
   return offers;
 }
 function seasonEnd(){
@@ -1360,12 +1739,12 @@ function seasonEnd(){
   if(S.cupLines){lines.push(...S.cupLines,'———');S.cupLines=null} // 国家队大赛回顾
   // 亚冠淘汰赛（模拟）
   if(S.aclActive&&S.aclGroup&&S.aclGroup.idx>=3){
-    const g=S.aclGroup;
-    lines.push(`亚冠小组赛：${g.rec.join('；')}（积${g.pts}分）`);
+    const g=S.aclGroup,cn=contName();
+    lines.push(`${cn}小组赛：${g.rec.join('；')}（积${g.pts}分）`);
     if(g.pts>=5||(g.pts>=4&&Math.random()<0.6)){
-      const stages=['亚冠1/4决赛','亚冠半决赛','亚冠决赛'];
+      const stages=[`${cn}1/4决赛`,`${cn}半决赛`,`${cn}决赛`];
       const myStr=S.teams[0].str+(overall()-55)*0.35;
-      const opps=shuffle(ACL_POOL.filter(o=>!g.opps.some(x=>x.name===o[0])));
+      const opps=shuffle(contPool().filter(o=>!g.opps.some(x=>x.name===o[0])));
       let w=0;
       for(;w<3;w++){
         const o=opps[w];
@@ -1373,13 +1752,24 @@ function seasonEnd(){
         lines.push(`${stages[w]} vs ${o[0]}：${win?'获胜！':'惜败。'}`);
         if(!win)break;
       }
-      if(w===3){p.honors.push(`第${p.season}季亚冠冠军`);p.money+=300;p.earnings+=300;p.pop=clamp(p.pop+20,0,100);
-        lines.push('👑 亚洲之巅！亚冠冠军！奖金+300万，人气+20')}
+      const pz=S.tier===0?1500:300;
+      if(w===3){p.honors.push(`第${p.season}季${cn}冠军`);p.money+=pz;p.earnings+=pz;p.pop=clamp(p.pop+20,0,100);
+        lines.push(`👑 ${S.tier===0?'欧洲之巅':'亚洲之巅'}！${cn}冠军！奖金+${pz}万，人气+20`)}
       else if(w===2)lines.push('止步决赛，虽败犹荣。');
-    }else lines.push('亚冠小组赛未能出线。');
+    }else lines.push(`${cn}小组赛未能出线。`);
   }
   lines.push(`${TIERS[S.tier].name}排名：第 ${pos} 名`);
   lines.push(`赛季数据：${p.apps}场 ${p.goals}球 ${p.assists}助攻，场均评分 ${avg.toFixed(2)}`);
+  // 赛季履历
+  p.history.push({s:p.season,team:S.teams[0].name,lg:TIERS[S.tier].name.slice(0,2),apps:p.apps,g:p.goals,a:p.assists,avg:avg.toFixed(2),pos});
+  // 宿敌之争
+  if(S.nemesis){
+    const ng=pois(0.6)+Math.round(8+Math.random()*14);
+    S.nemesis.sg=ng;S.nemesis.g+=ng;
+    lines.push(p.goals>ng?`😈 宿敌${S.nemesis.n}本季${ng}球——你用${p.goals}球狠狠压过了他！`
+      :p.goals===ng?`😈 宿敌${S.nemesis.n}和你同进${ng}球，胜负未分。`
+      :`😈 宿敌${S.nemesis.n}本季轰入${ng}球，媒体嘲讽你只有${p.goals}球……明年见！`);
+  }
   // 军令状结算
   if(S.task){
     const rankOK=pos<=S.task.rank, goalOK=p.goals>=S.task.goals;
@@ -1389,17 +1779,19 @@ function seasonEnd(){
   }
   // 下赛季亚冠资格
   if(S.tier===1&&pos<=3){S.aclNext=true;lines.push('🎫 联赛前三——获得下赛季亚冠参赛资格！')}
+  if(S.tier===0&&pos<=4){S.aclNext=true;lines.push('🎫 联赛前四——获得下赛季欧冠参赛资格！')}
   if(champ){
     p.honors.push(`第${p.season}季${TIERS[S.tier].name}冠军`);bonus+=5;
-    lines.push(`🏆 ${TIERS[S.tier].name}冠军！训练点 +5`+(S.tier===1?'——你登顶了整个足坛！':''));
+    lines.push(`🏆 ${TIERS[S.tier].name}冠军！训练点 +5`+(S.tier===1?'——你登顶了中国足坛！':S.tier===0?'——你征服了欧洲！':''));
     if(S.tier===1&&!p.honors.includes('足坛之巅'))p.honors.push('足坛之巅');
+    if(S.tier===0&&!p.honors.includes('欧洲之王'))p.honors.push('欧洲之王');
   }
   const topRival=S.rivals?Math.max(...S.rivals.map(r=>r.g)):99;
   if(p.goals>topRival){p.honors.push(`第${p.season}季最佳射手`);bonus+=3;lines.push(`👟 力压群雄（${p.goals}球），联赛最佳射手！训练点 +3`)}
   else if(S.rivals){const tr=S.rivals.find(r=>r.g===topRival);lines.push(`射手王被${tr.n}（${tr.team}，${topRival}球）拿走，你${p.goals}球位列其后。`)}
   if(avg>=8.0){p.honors.push(`第${p.season}季MVP`);bonus+=3;lines.push('🌟 联赛MVP！训练点 +3')}
   else if(avg>=7.2){bonus+=2;lines.push('表现出色，训练点 +2')}
-  if(S.tier===1&&champ&&avg>=8.0){
+  if(S.tier<=1&&champ&&avg>=8.0){
     p.honors.push(`第${p.season}季金球奖`);p.pop=clamp(p.pop+20,0,100);
     lines.push('👑 金球奖！你是这个星球最好的球员！人气+20');
   }
@@ -1410,10 +1802,18 @@ function seasonEnd(){
   // 冲级：带队夺冠且不在顶级联赛
   S.promote=champ&&S.tier>1;
   if(S.promote)lines.push(`🎉 球队夺得冠军，成功冲入${TIERS[S.tier-1].name}！`);
+  // 赛季末成就检查
+  checkAch().forEach(a=>lines.push(`🏅 解锁成就【${a.n}】：${a.d}`));
   // 转会报价
   S.offers=genOffers(pos,avg);
   S.seasonAvg=avg;
+  // 续约谈判资格：表现出色可谈条件
+  S.nego=avg>=7.0&&!S.negoDone?{done:false}:null;
   let offerHtml='';
+  if(S.nego)offerHtml+=`<h2 style="margin-top:14px">🖋️ 续约谈判</h2><div id="negoBox" class="row" style="background:var(--card2);border-radius:10px;padding:10px 12px;margin-top:8px">
+    <div class="grow" style="font-size:13.5px">俱乐部想和你谈续约——出色的赛季给了你筹码。</div>
+    <button class="btn" onclick="nego(0)">要求涨薪30%</button>
+    <button class="btn ghost" onclick="nego(1)">要求签字费</button></div>`;
   if(S.offers.length){
     offerHtml='<h2 style="margin-top:14px">📨 转会报价</h2>'+S.offers.map((o,i)=>
       `<div class="row" style="background:var(--card2);border-radius:10px;padding:10px 12px;margin-top:8px">
@@ -1436,11 +1836,24 @@ function seasonEnd(){
   };
   show('scResult');save();
 }
+function nego(t){ // 续约谈判
+  const p=S.player;
+  if(!S.nego||S.nego.done)return;
+  S.nego.done=true;S.negoDone=true;
+  let msg;
+  if(t===0){p.wageUp=(p.wageUp||0)+0.3;p.wage=calcWage();msg=`✅ 谈成了！周薪上涨30%（现在 ${p.wage}万/周）`}
+  else{const b=Math.round(ri(15,30)*tf());p.money+=b;p.earnings+=b;msg=`✅ 一次性签字费 +${b}万 到账！`}
+  $('negoBox').innerHTML=`<div class="grow" style="color:var(--green);font-weight:700">${msg}</div>`;
+  save();
+}
 function acceptOffer(i){
   const o=S.offers[i],p=S.player;
   p.trust=45;p.scout=clamp(p.scout-20,0,100);
+  p.wageUp=0; // 新东家重新谈薪
   S.tier=o.tier;
   S.teams[0]={name:o.name,ab:o.ab,c1:o.c1,c2:o.c2,str:o.str};
+  S.justMoved=true;
+  if(o.tier===0&&!p.honors.includes('留洋先驱'))p.honors.push('留洋先驱');
   startNewSeason();
 }
 function startNewSeason(){
@@ -1449,22 +1862,39 @@ function startNewSeason(){
   document.querySelector('#rRateBox span').textContent=' 本场评分';
   $('rBtn').onclick=afterResult;
   p.season++;p.age++;
-  p.energy=100;p.trust=clamp(p.trust+5,5,99); // 休赛期满血回归
+  // 年龄曲线：小将成长快，老将机能衰退
+  S.ageNote='';
+  if(p.age<=20){p.tp+=2;S.ageNote='青春正盛：额外训练点+2'}
+  else if(p.age>=31){
+    const d1=ri(1,2),d2=ri(0,2);
+    p.attrs.pac=clamp(p.attrs.pac-d1,30,95);p.attrs.sta=clamp(p.attrs.sta-d2,30,95);
+    if(p.attrs.men<92)p.attrs.men+=1;
+    S.ageNote=`岁月不饶人：速度-${d1}${d2?`、体能-${d2}`:''}，但心理+1（经验老到）`;
+  }
+  p.energy=100;p.trust=clamp(p.trust+5,5,99);p.injury=0; // 休赛期满血回归
   p.apps=0;p.goals=0;p.assists=0;p.ratings=[];
   S.teams[0].str+=clamp(Math.round((avg-6)*2),0,4);
   S.teams=makeTeams(S.tier,S.teams[0]);
-  rollSquad(); // 新赛季队友与教练更迭
+  rollSquad(S.justMoved);S.justMoved=false; // 新赛季队友与教练更迭
   newSeasonComps(); // 杯赛/军令状/射手榜/状态重置
+  S.negoDone=false;S.nego=null;
   p.wage=calcWage();
   S.offers=[];S.promote=false;
   S.round=0;S.table=freshTable();S.schedule=makeSchedule();
   save();goHome();
+  if(S.ageNote){
+    $('evTitle').textContent=`第${p.season}赛季 · ${p.age}岁`;
+    $('evText').textContent=S.ageNote;
+    $('evBtns').innerHTML='<button class="btn" onclick="$(\'evOverlay\').classList.add(\'hidden\')">开始新赛季</button>';
+    $('evOverlay').classList.remove('hidden');
+  }
 }
 function retire(){
   const p=S.player,hn=p.honors;
   const cnt=t=>hn.filter(h=>h.includes(t)).length;
   const score=p.careerGoals+cnt('冠军')*15+cnt('射手')*8+cnt('MVP')*8+cnt('金球')*40
-    +(hn.includes('足坛之巅')?50:0)+Math.round(p.earnings/50)+(p.items.academy?100:0);
+    +(hn.includes('足坛之巅')?50:0)+(hn.includes('欧洲之王')?60:0)+Math.round(p.earnings/50)+(p.items.academy?100:0)
+    +Object.keys(p.ach||{}).length*3+(p.love>=3?10:0);
   const grade=score>=220?'S':score>=130?'A':score>=70?'B':score>=35?'C':'D';
   const gtxt={S:'传奇！你的名字将被写进足球史册。',A:'豪门核心，一代球迷心中的英雄。',
     B:'扎实的职业生涯，问心无愧。',C:'平凡但真实的足球人生。',D:'至少，你曾追过梦。'}[grade];
