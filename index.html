@@ -969,10 +969,11 @@ const cv=$('cv'),ctx=cv.getContext('2d');
 const GOAL={x1:72,x2:408,y1:72,y2:250};
 function preciseW(){let w=Math.max(5,(S.player.attrs.sho+(M&&M.fb||0))*0.3-8);if(hasPerk('finisher'))w*=1.35;return w} // 精准区半宽，射门越高越宽
 function openKey(){
+  // 进攻链设计：射门是唯一的完整小游戏；传球/盘带是前奏，成功可链入射门；
+  // 任意球不再随机出现，只能由盘带被犯规链入
   const r=Math.random();
-  if(r<0.26)openPass();
-  else if(r<0.44)openDribble();
-  else if(r<0.55)openShot(FK_SITU);
+  if(r<0.27)openPass();
+  else if(r<0.52)openDribble();
   else if(M.tac==='def'&&r<0.75)openShot(SITUS[0]); // 防反：反击单刀
   else openShot();
 }
@@ -1056,9 +1057,9 @@ function loopG(id){
     if(G.phase===2){
       G.anim++;
       if(G.anim===36){
-        const map={agoal:['⚽ 助攻！队友进球了！','var(--green)'],akey:['好球，可惜队友没打进','var(--gold)'],cut:['传球被断！','var(--red)']};
+        const map={agoal:['⚽ 助攻！队友进球了！','var(--green)'],akey:['好球，可惜队友没打进','var(--gold)'],cut:['传球被断！','var(--red)'],'12':['🔁 撞墙配合！队友把球回敲！','var(--green)']};
         $('gHint').innerHTML=`<b style="color:${map[G.res][1]};font-size:16px">${map[G.res][0]}</b>`;
-        $('gBtns').innerHTML='<button class="btn" onclick="finishPass()">继续比赛</button>';
+        $('gBtns').innerHTML=G.res==='12'?'<button class="btn" onclick="passShot()">接回传，起脚射门！</button>':'<button class="btn" onclick="finishPass()">继续比赛</button>';
       }
     }
     requestAnimationFrame(()=>loopG(id));
@@ -1129,8 +1130,15 @@ function passClick(p){
   if(Math.random()<(1-G.q)*0.5)G.res='cut';
   else{
     const pGoal=clamp(0.18+0.5*G.q-(M.gk-60)*0.004,0.08,0.72);
-    G.res=Math.random()<pGoal?'agoal':'akey';
+    const r2=Math.random();
+    if(r2<pGoal)G.res='agoal';
+    else if(G.q>0.45&&r2<pGoal+0.24)G.res='12'; // 撞墙配合：队友回做，链入射门
+    else G.res='akey';
   }
+}
+function passShot(){
+  log(`${M.min}' 精妙的二过一！${G.mates[G.pick].name}将球回敲，${S.player.name}在禁区前沿拿球！`,'g');
+  G=null;openShot(SITUS[1]);
 }
 function finishPass(){
   const m=G.mates[G.pick],res=G.res;
@@ -1326,6 +1334,14 @@ function drawP(){
     }else if(p1<1){
       const x=240+(m.x-240)*p1, y=286+(m.y+18-286)*p1;
       drawBall2(x,y,6.5);
+    }else if(G.res==='12'){ // 二段：队友回敲给你
+      const p2=Math.min((G.anim-18)/14,1);
+      const x=m.x+(240-m.x)*p2, y=m.y+18+(250-m.y-18)*p2;
+      drawBall2(x,y,6.5);
+      if(p2>=1){
+        ctx.strokeStyle=`rgba(87,184,123,${0.5+0.3*Math.sin(G.t*0.4)})`;ctx.lineWidth=2.5;
+        ctx.beginPath();ctx.arc(240,262,30,0,7);ctx.stroke();
+      }
     }else{ // 二段：队友起脚射向球门
       const p2=Math.min((G.anim-18)/14,1);
       const tx=G.res==='agoal'?(m.x<240?214:266):240+14*Math.sin(G.t*0.05);
