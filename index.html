@@ -905,8 +905,8 @@ function beginMatch(cfg){
      gk:Math.round(opp.str+Math.random()*8-3),
      fb:p.form>=75?3:p.form<=25?-3:0, // 状态热度：属性临时±3
      bench:cfg.cup?false:p.trust<30,
-     dFac:1.25-0.25*eF,   // 精力低→散布大
-     bFac:1.15-0.15*eF};  // 精力低→滑块快
+     dFac:1.2-0.2*eF,    // 精力低→散布大
+     bFac:1.12-0.12*eF}; // 精力低→滑块快
   const usedMin=new Set();
   const pickMin=lo=>{let m;do{m=lo+Math.floor(Math.random()*(88-lo))}while(usedMin.has(m));usedMin.add(m);return m};
   for(let i=0;i<pois(lamT*0.55);i++)M.evs.push({min:pickMin(4),t:'tg'});
@@ -967,7 +967,7 @@ function handleEvent(e){
 /* ============ 射门小游戏（瞄准+时机） ============ */
 const cv=$('cv'),ctx=cv.getContext('2d');
 const GOAL={x1:72,x2:408,y1:72,y2:250};
-function preciseW(){let w=Math.max(5,(S.player.attrs.sho+(M&&M.fb||0))*0.3-8);if(hasPerk('finisher'))w*=1.35;return w} // 精准区半宽，射门越高越宽
+function preciseW(){let w=Math.max(7,(S.player.attrs.sho+(M&&M.fb||0))*0.34-6);if(hasPerk('finisher'))w*=1.35;return w} // 精准区半宽，射门越高越宽
 function openKey(){
   // 进攻链设计：射门是唯一的完整小游戏；传球/盘带是前奏，成功可链入射门；
   // 任意球不再随机出现，只能由盘带被犯规链入
@@ -980,8 +980,8 @@ function openKey(){
 function openShot(forceSitu){
   const situ=forceSitu||rnd(SITUS);
   const A=S.player.attrs;
-  let bspd=situ.bspd*(1.45-A.men*0.007)*M.bFac; // 心理高→滑块慢；精力低→滑块快
-  if(M.min>60&&A.sta<70)bspd*=1.18;             // 体能差→下半场滑块变快
+  let bspd=situ.bspd*(1.45-A.men*0.007)*M.bFac*0.85; // 心理高→滑块慢；精力低→滑块快
+  if(M.min>60&&A.sta<70)bspd*=1.12;             // 体能差→下半场滑块变快
   if(hasPerk('bigheart'))bspd*=0.8;             // 大心脏：滑块减速
   G={mode:'shot',situ,bspd,phase:0,t:Math.random()*100,mx:240,my:160,aimX:0,aimY:0,
      marker:90,dir:1,kx:240,kxF:0,precise:false,ball:null,res:null,anim:0,animLen:22,
@@ -1016,7 +1016,7 @@ function shoot(){
   const off=Math.abs(G.marker-240);
   const q=clamp(1-off/160,0,1);
   G.precise=off<preciseW();               // 精准射门！
-  let sig=situ.spread*(18+(100-sho)*3.0)*(1.55-q)*M.dFac;
+  let sig=situ.spread*(14+(100-sho)*2.6)*(1.55-q)*M.dFac;
   if(G.precise)sig*=0.3;
   const bx=G.aimX+g()*sig, by=G.aimY+g()*sig*0.75;
   M.shots++;
@@ -1025,9 +1025,9 @@ function shoot(){
   if(situ.id==='fk'&&!G.precise&&Math.abs(bx-G.wallX)<G.wallW&&by>168){res='block';G.ball={x:bx,y:262};G.res=res;G.phase=2;G.anim=0;G.animLen=10;return} // 打在人墙上（精准射门可绕过）
   if(bx<GOAL.x1||bx>GOAL.x2||by<GOAL.y1)res='miss';
   else{
-    let D=situ.reach*(135*(1.35-0.55*q)+45)*(1.06-sho*0.0035)*(0.78+M.gk*0.005)*(0.8+0.4*Math.random());
+    let D=situ.reach*(120*(1.35-0.55*q)+40)*(1.06-sho*0.0035)*(0.78+M.gk*0.005)*(0.8+0.4*Math.random());
     if(by<115)D*=0.72; // 高角度更难扑
-    const wowP=(G.precise?0.5:1)*clamp(0.04+M.gk*0.0012,0.05,0.17); // 门将越强神扑越多
+    const wowP=(G.precise?0.5:1)*clamp(0.03+M.gk*0.001,0.04,0.13); // 门将越强神扑越多
     res=Math.abs(bx-G.kxF)<D?'save':(Math.random()<wowP?'wow':'goal');
   }
   G.ball={x:bx,y:by};G.res=res;G.phase=2;G.anim=0;
@@ -1042,7 +1042,7 @@ function finishKey(){
     log(`${M.min}' ⚽ 球进了！！${S.player.name} 亲自破门得分！！`,'g');
     if(Math.random()<0.5)log(rnd(GOAL_CALLS).replace('＄',rnd(COMMS)),'y');
   }
-  else if(res==='save'){M.saved++;log(`${M.min}' ${S.player.name}的射门角度太正，被门将扑出！`,'y')}
+  else if(res==='save'){M.saved++;const sd=Math.abs(G.ball.x-G.kxF);log(`${M.min}' ${S.player.name}的射门${sd<45?'角度太正，被门将稳稳挡出':'被门将飞身侧扑挡出'}！`,'y')}
   else if(res==='wow'){M.saved++;log(`${M.min}' 不可思议！对方门将飞身神扑，救下必进球！`,'y')}
   else if(res==='block'){M.saved++;log(`${M.min}' ${S.player.name}的任意球狠狠打在人墙上弹出！`,'y')}
   else{M.missed++;log(`${M.min}' 可惜！${S.player.name}的射门偏出了球门。`,'y')}
@@ -1127,9 +1127,9 @@ function passClick(p){
   const open=Math.abs(defX(m)-m.x)/38; // 防守人离开线路的程度
   G.q=clamp(open*0.55+A.pas/100*0.45+g()*0.12+(S.chem-40)/250+(hasPerk('engine')?0.15:0),0,1);
   G.pick=idx;G.phase=2;G.anim=0;
-  if(Math.random()<(1-G.q)*0.5)G.res='cut';
+  if(Math.random()<(1-G.q)*0.4)G.res='cut';
   else{
-    const pGoal=clamp(0.18+0.5*G.q-(M.gk-60)*0.004,0.08,0.72);
+    const pGoal=clamp(0.22+0.5*G.q-(M.gk-60)*0.004,0.1,0.75);
     const r2=Math.random();
     if(r2<pGoal)G.res='agoal';
     else if(G.q>0.45&&r2<pGoal+0.24)G.res='12'; // 撞墙配合：队友回做，链入射门
@@ -1164,7 +1164,7 @@ function dribClick(p){
   const side=p.x<240?-1:1;
   const lean=dribLean(),A=S.player.attrs;
   const read=(-Math.sign(lean)===side?1:-1)*Math.abs(lean); // 反重心突破的读取质量
-  const pWin=clamp(0.30+read*0.42+((A.dri+A.pac)/2-60)*0.008+(hasPerk('flash')?0.15:0)+(M.fb>0?0.04:M.fb<0?-0.04:0),0.05,0.95);
+  const pWin=clamp(0.38+read*0.42+((A.dri+A.pac)/2-60)*0.008+(hasPerk('flash')?0.15:0)+(M.fb>0?0.04:M.fb<0?-0.04:0),0.08,0.95);
   G.side=side;G.phase=2;G.anim=0;
   const r=Math.random();
   G.res=r<pWin?'win':(r<pWin+0.18?'foul':'lose');
@@ -1411,7 +1411,23 @@ function drawG(){
   if(G.phase===2){
     const p=Math.min(G.anim/G.animLen,1);
     const sx=240,sy=322;
-    const x=sx+(G.ball.x-sx)*p, y=sy+(G.ball.y-sy)*p-40*Math.sin(Math.PI*p);
+    let x=sx+(G.ball.x-sx)*p, y=sy+(G.ball.y-sy)*p-40*Math.sin(Math.PI*p);
+    // 落点之后的结果演出：画面必须与判定一致
+    if(p>=1){
+      const p2=Math.min((G.anim-G.animLen)/12,1);
+      if(G.res==='save'||G.res==='wow'){       // 被扑出：球被挡开，落在门前
+        x=G.ball.x+Math.sign(G.ball.x-240||1)*32*p2;
+        y=G.ball.y+(266-G.ball.y)*p2*p2;
+      }else if(G.res==='block'){               // 打在人墙上弹回
+        x=G.ball.x+(G.ball.x>G.wallX?26:-26)*p2;
+        y=262+34*p2;
+      }else if(G.res==='goal'){                // 球进：球陷入网窝+网内闪光
+        y=G.ball.y+4*Math.min(p2*3,1);
+        const fx=clamp(G.ball.x,GOAL.x1+30,GOAL.x2-30);
+        ctx.fillStyle=`rgba(87,184,123,${0.30+0.22*Math.sin(G.t*0.5)})`;
+        ctx.fillRect(fx-42,GOAL.y1,84,GOAL.y2-GOAL.y1);
+      }
+    }
     ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x,y,8-2.5*p,0,7);ctx.fill();
     ctx.strokeStyle='#333';ctx.stroke();
   }
