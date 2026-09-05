@@ -967,7 +967,12 @@ function handleEvent(e){
 /* ============ 射门小游戏（瞄准+时机） ============ */
 const cv=$('cv'),ctx=cv.getContext('2d');
 const GOAL={x1:72,x2:408,y1:72,y2:250};
-function preciseW(){let w=Math.max(7,(S.player.attrs.sho+(M&&M.fb||0))*0.34-6);if(hasPerk('finisher'))w*=1.35;return w} // 精准区半宽，射门越高越宽
+/* 能力→小游戏难度的统一曲线：属性40→0，100→1
+   能力弱：滑块/防守人动得快、甜区小；能力强：动得慢、甜区大 */
+function skillFac(v){return clamp((v-40)/60,0,1)}
+function speedFac(v){return 1.2-0.55*skillFac(v)}   // 40→1.20倍速，70→0.93，100→0.65
+function preciseW(){let w=7+30*skillFac(S.player.attrs.sho+(M&&M.fb||0));if(hasPerk('finisher'))w*=1.35;return w} // 精准区半宽：射门40→7px，70→22，100→37
+function okW(){return 40+60*skillFac(S.player.attrs.sho+(M&&M.fb||0))} // 尚可区半宽：射门40→40px，100→100
 function openKey(){
   // 进攻链设计：射门是唯一的完整小游戏；传球/盘带是前奏，成功可链入射门；
   // 任意球不再随机出现，只能由盘带被犯规链入
@@ -980,10 +985,11 @@ function openKey(){
 function openShot(forceSitu){
   const situ=forceSitu||rnd(SITUS);
   const A=S.player.attrs;
-  let bspd=situ.bspd*(1.45-A.men*0.007)*M.bFac*0.85; // 心理高→滑块慢；精力低→滑块快
+  let bspd=situ.bspd*speedFac(A.men+M.fb)*M.bFac; // 心理弱→滑块快，心理强→滑块慢；精力低→更快
+  const kspd=situ.kspd*(0.82+M.gk*0.003);          // 门将评分高→移动更快
   if(M.min>60&&A.sta<70)bspd*=1.12;             // 体能差→下半场滑块变快
   if(hasPerk('bigheart'))bspd*=0.8;             // 大心脏：滑块减速
-  G={mode:'shot',situ,bspd,phase:0,t:Math.random()*100,mx:240,my:160,aimX:0,aimY:0,
+  G={mode:'shot',situ,bspd,kspd,phase:0,t:Math.random()*100,mx:240,my:160,aimX:0,aimY:0,
      marker:90,dir:1,kx:240,kxF:0,precise:false,ball:null,res:null,anim:0,animLen:22,
      wallX:situ.id==='fk'?240+ri(-45,45):0,wallW:situ.id==='fk'?(hasPerk('fkmaster')?32:46):0};
   $('gTitle').textContent=`${M.min}' 关键时刻 · ${situ.name}`;
@@ -993,7 +999,7 @@ function openShot(forceSitu){
   startLoop();
 }
 let LOOP=0;
-function startLoop(){LOOP++;const id=LOOP;requestAnimationFrame(()=>loopG(id))}
+function startLoop(){LOOP++;const id=LOOP;G.last=0;G.shown=false;requestAnimationFrame(ts=>loopG(id,ts))}
 function cvPos(e){
   const r=cv.getBoundingClientRect();
   return{x:(e.clientX-r.left)*cv.width/r.width,y:(e.clientY-r.top)*cv.height/r.height};
@@ -1014,7 +1020,7 @@ function shoot(){
   const sho=A.sho+M.fb; // 状态热度加成
   G.kxF=G.kx;
   const off=Math.abs(G.marker-240);
-  const q=clamp(1-off/160,0,1);
+  const q=clamp(1-off/(okW()*2.5),0,1);   // 尚可区边缘 q=0.6，越靠中心越高
   G.precise=off<preciseW();               // 精准射门！
   let sig=situ.spread*(14+(100-sho)*2.6)*(1.55-q)*M.dFac;
   if(G.precise)sig*=0.3;
@@ -1049,29 +1055,31 @@ function finishKey(){
   G=null;$('overlay').classList.add('hidden');
   runTimer();
 }
-function loopG(id){
+function loopG(id,ts){
   if(!G||id!==LOOP)return;
-  G.t++;
+  // 按真实时间推进（以60fps为1），120Hz屏幕上滑块不会变快
+  const dt=G.last?clamp((ts-G.last)/16.667,0.25,2.5):1;G.last=ts;
+  G.t+=dt;
   if(G.mode==='pass'){
     drawP();
     if(G.phase===2){
-      G.anim++;
-      if(G.anim===36){
+      G.anim+=dt;
+      if(G.anim>=36&&!G.shown){G.shown=true;
         const map={agoal:['⚽ 助攻！队友进球了！','var(--green)'],akey:['好球，可惜队友没打进','var(--gold)'],cut:['传球被断！','var(--red)'],'12':['🔁 撞墙配合！队友把球回敲！','var(--green)']};
         $('gHint').innerHTML=`<b style="color:${map[G.res][1]};font-size:16px">${map[G.res][0]}</b>`;
         $('gBtns').innerHTML=G.res==='12'?'<button class="btn" onclick="passShot()">接回传，起脚射门！</button>':'<button class="btn" onclick="finishPass()">继续比赛</button>';
       }
     }
-    requestAnimationFrame(()=>loopG(id));
+    requestAnimationFrame(ts=>loopG(id,ts));
     return;
   }
   if(G.mode==='drib'){
     drawD();
     if(G.phase===2){
-      G.anim++;
-      if(G.anim===30){
+      G.anim+=dt;
+      if(G.anim>=30&&!G.shown){G.shown=true;
         if(G.res==='win'){
-          $('gHint').innerHTML='<b style="color:var(--green);font-size:16px">⚡ 过掉了！单刀在前！</b>';
+          $('gHint').innerHTML=`<b style="color:var(--green);font-size:16px">${G.perfect?'🎯 时机完美！':''}⚡ 过掉了！单刀在前！</b>`;
           $('gBtns').innerHTML='<button class="btn" onclick="dribShot()">杀入禁区，射门！</button>';
         }else if(G.res==='foul'){
           $('gHint').innerHTML='<b style="color:var(--gold);font-size:16px">对方被迫犯规——任意球！</b>';
@@ -1082,19 +1090,19 @@ function loopG(id){
         }
       }
     }
-    requestAnimationFrame(()=>loopG(id));
+    requestAnimationFrame(ts=>loopG(id,ts));
     return;
   }
-  if(G.phase<2)G.kx=240+95*Math.sin(G.t*G.situ.kspd);
+  if(G.phase<2)G.kx=240+95*Math.sin(G.t*G.kspd);
   if(G.phase===1){
-    G.marker+=G.dir*G.bspd;
+    G.marker+=G.dir*G.bspd*dt;
     if(G.marker>390){G.marker=390;G.dir=-1}
     if(G.marker<90){G.marker=90;G.dir=1}
   }
   drawG();
   if(G.phase===2){
-    G.anim++;
-    if(G.anim===G.animLen+6){
+    G.anim+=dt;
+    if(G.anim>=G.animLen+6&&!G.shown){G.shown=true;
       const map={goal:['⚽ 球进了！！！','var(--green)'],save:['被门将扑出！','var(--gold)'],wow:['门将神扑！','var(--gold)'],miss:['射偏了…','var(--red)'],block:['被人墙挡住！','var(--red)']};
       let txt=map[G.res][0];
       if(G.precise&&G.res==='goal')txt='🎯 精准射门！'+txt;
@@ -1102,32 +1110,38 @@ function loopG(id){
       $('gBtns').innerHTML='<button class="btn" onclick="finishKey()">继续比赛</button>';
     }
   }
-  requestAnimationFrame(()=>loopG(id));
+  requestAnimationFrame(ts=>loopG(id,ts));
 }
 
 /* ---------- 传球小游戏 ---------- */
+const PASS_AMP=40; // 防守人横移幅度
+function laneW(){return 30-16*skillFac(S.player.attrs.pas+(M&&M.fb||0))} // 线路半宽：传球40→30px（只有一半时间是空档），100→14px（八成时间空档）
 function openPass(){
   const names=shuffle(S.mates).slice(0,3);
-  G={mode:'pass',phase:0,t:0,anim:0,res:null,pick:null,q:0,
+  const sf=speedFac(S.player.attrs.pas+M.fb); // 传球弱→防守人横移快；传球强→慢
+  G={mode:'pass',phase:0,t:0,anim:0,res:null,pick:null,q:0,clean:false,
      mates:[{x:120,y:150},{x:240,y:112},{x:360,y:150}].map((m,i)=>({
-       ...m,name:names[i],spd:0.05+Math.random()*0.04,ph:Math.random()*6.28}))};
+       ...m,name:names[i],spd:(0.05+Math.random()*0.04)*sf,ph:Math.random()*6.28}))};
   $('gTitle').textContent=`${M.min}' 关键时刻 · 助攻机会`;
-  $('gHint').textContent='队友前插！等防守人横移让开线路，点击队友送出直塞';
+  $('gHint').textContent='队友前插！等防守人离开线路（线路变绿）时点击队友送出直塞';
   $('gBtns').innerHTML='';
   $('overlay').classList.remove('hidden');
   startLoop();
 }
-function defX(m){return m.x+38*Math.sin(G.t*m.spd+m.ph)}
+function defX(m){return m.x+PASS_AMP*Math.sin(G.t*m.spd+m.ph)}
+function laneOpen(m){return Math.abs(defX(m)-m.x)>=laneW()} // 防守人已让开线路（甜区）
 function passClick(p){
   if(G.phase!==0)return;
   let idx=-1;
   G.mates.forEach((m,i)=>{if(Math.hypot(p.x-m.x,p.y-m.y)<42)idx=i});
   if(idx<0)return;
   const A=S.player.attrs,m=G.mates[idx];
-  const open=Math.abs(defX(m)-m.x)/38; // 防守人离开线路的程度
-  G.q=clamp(open*0.55+A.pas/100*0.45+g()*0.12+(S.chem-40)/250+(hasPerk('engine')?0.15:0),0,1);
+  const open=Math.abs(defX(m)-m.x)/PASS_AMP; // 防守人离开线路的程度
+  G.clean=laneOpen(m);                        // 在甜区内出球
+  G.q=clamp(open*0.5+A.pas/100*0.4+(G.clean?0.1:-0.15)+g()*0.1+(S.chem-40)/250+(hasPerk('engine')?0.15:0),0,1);
   G.pick=idx;G.phase=2;G.anim=0;
-  if(Math.random()<(1-G.q)*0.4)G.res='cut';
+  const pCut=G.clean?(1-G.q)*0.25:0.35+(1-G.q)*0.4; // 硬塞进被堵的线路，大概率被断
+  if(Math.random()<pCut)G.res='cut';
   else{
     const pGoal=clamp(0.22+0.5*G.q-(M.gk-60)*0.004,0.1,0.75);
     const r2=Math.random();
@@ -1149,11 +1163,13 @@ function finishPass(){
   runTimer();
 }
 /* ---------- 盘带过人小游戏 ---------- */
+function leanThr(){return 0.8-0.45*skillFac(S.player.attrs.dri+(M&&M.fb||0))} // 突破时机阈值：盘带40→重心要偏到0.8才算时机，100→0.35就够
 function openDribble(){
-  G={mode:'drib',phase:0,t:0,anim:0,res:null,side:0,
-     lspd:0.055+Math.random()*0.05,ph:Math.random()*6.28};
+  const sf=speedFac(S.player.attrs.dri+M.fb); // 盘带弱→后卫晃得快，难读；盘带强→慢
+  G={mode:'drib',phase:0,t:0,anim:0,res:null,side:0,perfect:false,
+     lspd:(0.055+Math.random()*0.05)*sf,ph:Math.random()*6.28};
   $('gTitle').textContent=`${M.min}' 关键时刻 · 1v1盘带过人`;
-  $('gHint').textContent='后卫堵在你身前——看准他重心偏移的瞬间，点击另一侧突破！';
+  $('gHint').textContent='后卫堵在你身前——等他重心明显偏向一侧（那侧亮起"突破时机"）时，点击另一侧突破！';
   $('gBtns').innerHTML='';
   $('overlay').classList.remove('hidden');
   startLoop();
@@ -1164,7 +1180,8 @@ function dribClick(p){
   const side=p.x<240?-1:1;
   const lean=dribLean(),A=S.player.attrs;
   const read=(-Math.sign(lean)===side?1:-1)*Math.abs(lean); // 反重心突破的读取质量
-  const pWin=clamp(0.38+read*0.42+((A.dri+A.pac)/2-60)*0.008+(hasPerk('flash')?0.15:0)+(M.fb>0?0.04:M.fb<0?-0.04:0),0.08,0.95);
+  G.perfect=read>=leanThr();                                  // 在甜区内出脚
+  const pWin=clamp(0.36+read*0.4+(G.perfect?0.14:0)+((A.dri+A.pac)/2-60)*0.008+(hasPerk('flash')?0.15:0)+(M.fb>0?0.04:M.fb<0?-0.04:0),0.08,0.95);
   G.side=side;G.phase=2;G.anim=0;
   const r=Math.random();
   G.res=r<pWin?'win':(r<pWin+0.18?'foul':'lose');
@@ -1188,11 +1205,20 @@ function drawD(){
   const lean=G.phase===0?dribLean():0;
   // 两侧突破提示区
   if(G.phase===0){
-    const a=0.06+0.10*Math.max(0,-lean),b=0.06+0.10*Math.max(0,lean);
+    // lean>0=后卫重心偏右→应从左路突破（与dribClick判定一致：提示亮在该点击的一侧）
+    const thr=leanThr(),hotL=lean>=thr,hotR=-lean>=thr;
+    const a=0.06+0.10*Math.max(0,lean)+(hotL?0.12:0),b=0.06+0.10*Math.max(0,-lean)+(hotR?0.12:0);
     ctx.fillStyle=`rgba(87,184,123,${a})`;ctx.fillRect(0,90,200,240);
     ctx.fillStyle=`rgba(87,184,123,${b})`;ctx.fillRect(280,90,200,240);
-    ctx.fillStyle='rgba(255,255,255,.55)';ctx.font='bold 15px sans-serif';ctx.textAlign='center';
-    ctx.fillText('← 左路突破',100,315);ctx.fillText('右路突破 →',380,315);
+    ctx.font='bold 15px sans-serif';ctx.textAlign='center';
+    ctx.fillStyle=hotL?'#a7f3c4':'rgba(255,255,255,.55)';ctx.fillText(hotL?'⚡ 突破时机！':'← 左路突破',100,315);
+    ctx.fillStyle=hotR?'#a7f3c4':'rgba(255,255,255,.55)';ctx.fillText(hotR?'⚡ 突破时机！':'右路突破 →',380,315);
+    // 重心仪：显示后卫重心与甜区阈值
+    ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(180,60,120,8);
+    ctx.fillStyle='rgba(87,184,123,.6)';ctx.fillRect(180,60,60*(1-thr),8);ctx.fillRect(240+60*thr,60,60*(1-thr),8);
+    ctx.fillStyle='#fff';ctx.fillRect(240+lean*58-2,57,4,14);
+    ctx.font='10px sans-serif';ctx.fillStyle='rgba(255,255,255,.5)';ctx.textAlign='center';
+    ctx.fillText(`后卫重心 · 时机窗口 ← 盘带${S.player.attrs.dri}`,240,94);
   }
   // 后卫（红）：重心偏移
   if(G.phase<2)drawMini(240+lean*30,150,'#b56f63','#8a4b41','#402c28',G.t*0.14,1);
@@ -1287,15 +1313,23 @@ function drawP(){
   // 对方门将（橙）
   drawMini(240+14*Math.sin(G.t*0.05),34,'#c98a4f','#8a5427','#1e293b',G.t*0.06,0.72);
   // 传球线路（虚线+箭头）
+  const LW=laneW();
   G.mates.forEach((m,i)=>{
     const hot=G.phase===2&&G.pick===i;
-    ctx.strokeStyle=hot?'rgba(255,255,255,.85)':'rgba(255,255,255,.2)';
+    const open=G.phase===0?laneOpen(m):G.clean&&hot;
+    // 传球走廊：宽度=线路半宽（传球越高越窄，越容易空出来）；防守人让开→绿，堵住→红
+    if(G.phase===0||hot){
+      const ang=Math.atan2(m.y+18-286,m.x-240),nx=-Math.sin(ang)*LW,ny=Math.cos(ang)*LW;
+      ctx.fillStyle=open?'rgba(87,184,123,.20)':'rgba(239,68,68,.16)';
+      ctx.beginPath();ctx.moveTo(240+nx*0.35,286+ny*0.35);ctx.lineTo(m.x+nx,m.y+18+ny);ctx.lineTo(m.x-nx,m.y+18-ny);ctx.lineTo(240-nx*0.35,286-ny*0.35);ctx.closePath();ctx.fill();
+    }
+    ctx.strokeStyle=hot?'rgba(255,255,255,.85)':open?'rgba(87,184,123,.7)':'rgba(255,255,255,.2)';
     ctx.setLineDash([8,8]);ctx.lineDashOffset=-G.t*0.8;ctx.lineWidth=hot?2.5:2;
     ctx.beginPath();ctx.moveTo(240,286);ctx.lineTo(m.x,m.y+18);ctx.stroke();
     ctx.setLineDash([]);ctx.lineDashOffset=0;
     // 箭头
     const ang=Math.atan2(m.y+18-286,m.x-240);
-    ctx.fillStyle=hot?'rgba(255,255,255,.85)':'rgba(255,255,255,.3)';
+    ctx.fillStyle=hot?'rgba(255,255,255,.85)':open?'rgba(87,184,123,.8)':'rgba(255,255,255,.3)';
     ctx.save();ctx.translate(m.x-Math.cos(ang)*30,m.y+18-Math.sin(ang)*30);ctx.rotate(ang);
     ctx.beginPath();ctx.moveTo(8,0);ctx.lineTo(-5,-6);ctx.lineTo(-5,6);ctx.closePath();ctx.fill();
     ctx.restore();
@@ -1309,8 +1343,9 @@ function drawP(){
     namePill(m.x,m.y-42,m.name,hot);
     // 可点击提示圈
     if(G.phase===0){
-      ctx.strokeStyle=`rgba(255,255,255,${0.25+0.15*Math.sin(G.t*0.12+i)})`;
-      ctx.lineWidth=1.5;
+      const op=laneOpen(m);
+      ctx.strokeStyle=op?`rgba(87,184,123,${0.6+0.3*Math.sin(G.t*0.2+i)})`:`rgba(255,255,255,${0.2+0.1*Math.sin(G.t*0.12+i)})`;
+      ctx.lineWidth=op?2.5:1.5;
       ctx.beginPath();ctx.arc(m.x,m.y+4,24+2*Math.sin(G.t*0.12+i),0,7);ctx.stroke();
     }
   });
@@ -1318,6 +1353,8 @@ function drawP(){
   drawMini(240,286,'#f8fafc','#cbd5e1','#31473a',G.phase===2?0:Math.sin(G.t*0.05),1);
   namePill(240,244,'你',false);
   if(G.phase===0)drawBall2(252,308,6.5);
+  ctx.font='10px sans-serif';ctx.fillStyle='rgba(255,255,255,.5)';
+  ctx.textAlign='left';ctx.fillText(`线路宽度·防守人速度 ← 传球${S.player.attrs.pas}`,8,322);
   // 传球/射门动画
   if(G.phase===2){
     const m=G.mates[G.pick];
@@ -1401,11 +1438,15 @@ function drawG(){
   if(G.phase>=1)crosshair(G.aimX,G.aimY,'rgba(87,184,123,.85)');
   // 时机条：绿色精准区宽度=射门属性
   if(G.phase===1){
-    const W=preciseW();
+    const W=preciseW(),OW=okW();
     ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(80,296,320,22);
-    ctx.fillStyle='rgba(87,184,123,.25)';ctx.fillRect(240-64,296,128,22);      // 尚可区
-    ctx.fillStyle='rgba(87,184,123,.85)';ctx.fillRect(240-W,296,W*2,22);       // 精准区
-    ctx.fillStyle='#fff';ctx.fillRect(G.marker-3,293,6,28);
+    ctx.fillStyle='rgba(87,184,123,.25)';ctx.fillRect(240-OW,296,OW*2,22);     // 尚可区（随射门变宽）
+    ctx.fillStyle='rgba(87,184,123,.85)';ctx.fillRect(240-W,296,W*2,22);       // 精准区（随射门变宽）
+    const inW=Math.abs(G.marker-240)<W;
+    ctx.fillStyle=inW?'#ffe066':'#fff';ctx.fillRect(G.marker-3,293,6,28);
+    ctx.font='10px sans-serif';ctx.fillStyle='rgba(255,255,255,.55)';
+    ctx.textAlign='left';ctx.fillText(`甜区 ← 射门${S.player.attrs.sho}`,80,290);
+    ctx.textAlign='right';ctx.fillText(`滑块速度 ← 心理${S.player.attrs.men}`,400,290);
   }
   // 射门动画（球速=射门属性）
   if(G.phase===2){
