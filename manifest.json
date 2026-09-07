@@ -3,8 +3,8 @@
   "short_name": "一球成名",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#14171c",
-  "theme_color": "#14171c",
+  "background_color":"#f3f5f7",
+  "theme_color":"#ffffff",
   "start_url": "./index.html",
   "icons": [
     {"src": "icon-180.png", "sizes": "180x180", "type": "image/png"},
