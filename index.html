@@ -165,12 +165,18 @@ tr.me td{color:var(--green2);font-weight:700;background:#eaf7ef}
       <input type="text" id="inName" placeholder="输入球员姓名" value="李风" maxlength="10">
       <button class="btn mt" style="width:100%" onclick="newGame()">开始生涯</button>
       <button class="btn ghost mt" style="width:100%;display:none" id="btnLoad" onclick="loadGame()">继续上次生涯</button>
+      <button class="btn ghost mt" style="width:100%" onclick="openSlots('load')">📂 读取存档</button>
     </div>
   </div>
 </section>
 
 <!-- 主页 -->
 <section id="scHome">
+  <div class="row" id="saveBar" style="margin-bottom:10px;gap:6px">
+    <button class="btn ghost grow" style="padding:8px 6px;font-size:13px" onclick="openSlots('save')">💾 存档</button>
+    <button class="btn ghost grow" style="padding:8px 6px;font-size:13px" onclick="openSlots('load')">📂 读档</button>
+    <button class="btn ghost grow" style="padding:8px 6px;font-size:13px" onclick="confirmNew()">🆕 新开</button>
+  </div>
   <div class="card">
     <div class="pcard">
       <div class="ovr"><b id="hOvr"></b><span>综合</span></div>
@@ -367,6 +373,48 @@ function loadGame(){
   goHome();
 }
 if(localStorage.getItem('yqcm1'))$('btnLoad').style.display='block';
+/* ---- 手动存档槽（3个）+ 自动存档 ---- */
+const SLOTS=['yqcm_s1','yqcm_s2','yqcm_s3'];
+function slotInfo(key){
+  try{const d=JSON.parse(localStorage.getItem(key));if(!d||!d.player)return null;
+    const p=d.player,lg=LEAGUES[d.lg];
+    return {name:p.name,season:p.season,age:p.age,team:d.teams&&d.teams[0]&&d.teams[0].name,lg:lg?lg.name:'',ovr:Math.round(p.attrs.sho*.30+p.attrs.dri*.20+p.attrs.pac*.15+p.attrs.pas*.15+p.attrs.sta*.10+p.attrs.men*.10),time:d.savedAt||''}}
+  catch(e){return null}
+}
+function slotLine(info){return info?`<b>${info.name}</b> · 第${info.season}季 ${info.age}岁 · ${info.team||''}（${info.lg}）· 综合${info.ovr}<br><span style="color:var(--dim);font-size:12px">${info.time||'—'}</span>`:'<span style="color:var(--dim)">— 空 —</span>'}
+function openSlots(mode){
+  const inGame=!!S;
+  const rows=SLOTS.map((k,i)=>{const info=slotInfo(k);
+    if(mode==='save')return `<button class="evbtn" onclick="saveSlot(${i})">💾 存档 ${i+1}：${slotLine(info)}</button>`;
+    return info?`<button class="evbtn" onclick="loadSlot('${k}')">📂 存档 ${i+1}：${slotLine(info)}</button>`:`<div class="evbtn" style="opacity:.5;cursor:default">存档 ${i+1}：${slotLine(null)}</div>`}).join('');
+  const auto=slotInfo('yqcm1');
+  const autoRow=mode==='load'&&auto?`<button class="evbtn" onclick="loadSlot('yqcm1')">🔄 自动存档：${slotLine(auto)}</button>`:'';
+  $('evTitle').textContent=mode==='save'?'💾 保存到存档槽':'📂 读取存档';
+  $('evText').innerHTML=mode==='save'?'游戏每步都会自动存档；手动存档用来留一个"存档点"随时回退。':'读档会覆盖当前进度（当前进度仍保留在自动存档里，直到你下一步操作）。';
+  $('evBtns').innerHTML=rows+autoRow+`<button class="btn ghost" style="width:100%;margin-top:12px" onclick="hideEv()">取消</button>`;
+  $('evOverlay').classList.remove('hidden');
+}
+function hideEv(){$('evOverlay').classList.add('hidden')}
+function saveSlot(i){
+  if(!S)return;
+  S.savedAt=new Date().toLocaleString('zh-CN',{hour12:false});
+  localStorage.setItem(SLOTS[i],JSON.stringify(S));save();
+  openSlots('save');
+  $('evText').innerHTML=`<b style="color:var(--green)">✅ 已保存到存档 ${i+1}</b>`;
+}
+function loadSlot(key){
+  const d=localStorage.getItem(key);if(!d)return;
+  if(M&&M.timer){clearInterval(M.timer);M.timer=null}
+  G=null;M=null;$('overlay').classList.add('hidden');hideEv();
+  localStorage.setItem('yqcm1',d);
+  loadGame();
+}
+function confirmNew(){
+  $('evTitle').textContent='🆕 开始新的足球人生？';
+  $('evText').innerHTML='当前进度会被清空（手动存档槽里的存档不受影响）。想保留请先"存档"。';
+  $('evBtns').innerHTML=`<button class="btn" style="width:100%" onclick="localStorage.removeItem('yqcm1');location.reload()">清空并新开</button><button class="btn ghost" style="width:100%;margin-top:8px" onclick="hideEv()">取消</button>`;
+  $('evOverlay').classList.remove('hidden');
+}
 
 /* ============ 新游戏 ============ */
 const clubOf=c=>({name:c.n,c1:c.c1,c2:c.c2,str:c.s,p:c.p||[]}); // 数据表条目→球队对象
