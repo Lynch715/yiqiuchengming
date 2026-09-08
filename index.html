@@ -2039,5 +2039,11 @@ function retire(){
   show('scResult');
 }
 </script>
+<script>
+/* 离线支持：联网打开一次后即可离线游玩 */
+if('serviceWorker' in navigator){
+  addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
 </body>
 </html>
