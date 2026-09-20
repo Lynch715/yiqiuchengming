@@ -1463,7 +1463,15 @@ function drawG(){
   if(G.phase===2){
     const p=Math.min(G.anim/G.animLen,1);
     const sx=240,sy=322;
-    let x=sx+(G.ball.x-sx)*p, y=sy+(G.ball.y-sy)*p-40*Math.sin(Math.PI*p);
+    // 直线飞向实际落点；只有任意球带一点绕人墙的弧线（横向 ±5px）
+    const curve=G.situ&&G.situ.id==='fk'?(G.ball.x>=G.wallX?1:-1)*5*Math.sin(Math.PI*p):0;
+    let x=sx+(G.ball.x-sx)*p+curve, y=sy+(G.ball.y-sy)*p;
+    // 准星→实际落点：偏差可视化（脚法散布），精准射门时几乎重合
+    if(Math.hypot(G.ball.x-G.aimX,G.ball.y-G.aimY)>6){
+      ctx.save();ctx.setLineDash([4,4]);ctx.strokeStyle='rgba(255,224,102,.75)';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(G.aimX,G.aimY);ctx.lineTo(G.ball.x,G.ball.y);ctx.stroke();ctx.restore();
+      ctx.strokeStyle='rgba(255,224,102,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(G.ball.x,G.ball.y,6,0,7);ctx.stroke();
+    }
     // 落点之后的结果演出：画面必须与判定一致
     if(p>=1){
       const p2=Math.min((G.anim-G.animLen)/12,1);
@@ -1480,7 +1488,8 @@ function drawG(){
         ctx.fillRect(fx-42,GOAL.y1,84,GOAL.y2-GOAL.y1);
       }
     }
-    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x,y,8-2.5*p,0,7);ctx.fill();
+    ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(x,y+3+6*(1-p),7-3*p,3-p,0,0,7);ctx.fill(); // 影子表现深度
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x,y,9-4*p,0,7);ctx.fill();
     ctx.strokeStyle='#333';ctx.stroke();
   }
 }
@@ -2037,12 +2046,6 @@ function retire(){
   $('rBtn').textContent='开启新的足球人生';
   $('rBtn').onclick=()=>{localStorage.removeItem('yqcm1');location.reload()};
   show('scResult');
-}
-</script>
-<script>
-/* 离线支持：联网打开一次后即可离线游玩 */
-if('serviceWorker' in navigator){
-  addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
 </script>
 </body>
