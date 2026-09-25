@@ -510,6 +510,7 @@ function goHome(){
   const warns=(p.trust<30?`<br><span style="color:var(--red)">⚠️ ${S.coach}指导对你不满（信任${p.trust}），你只能坐替补席等待登场</span>`:'')+
       (p.energy<50?`<br><span style="color:var(--gold)">⚠️ 精力不足（${p.energy}），比赛中会明显脚软</span>`:'')+
       (p.injury>0?`<br><span style="color:var(--red)">🏥 你有伤在身，还需伤停 ${p.injury} 轮</span>`:'');
+  let over=false;
   if(S.cupQ&&S.cupQ.length){
     const q=S.cupQ[0];
     if(q.comp==='fa')
@@ -531,10 +532,14 @@ function goHome(){
     $('btnKick').textContent='开始比赛';
     $('btnKick').style.display='';
   }else{
-    $('hNext').innerHTML='<span style="color:var(--dim)">赛季已结束</span>';
-    $('btnKick').style.display='none';
+    over=true;
+    $('hNext').innerHTML='<span style="color:var(--dim)">赛季已结束</span>'+(S.cup?`<br><span style="color:var(--gold)">🇨🇳 ${NT[S.cup.type].name}正在进行中</span>`:'');
+    $('btnKick').textContent=S.cup?'继续国家队大赛':S.seasonDone===p.season?'查看赛季总结':'赛季总结 →';
+    $('btnKick').style.display='';
+    $('btnKick').onclick=resumeSeasonEnd;
   }
-  if(p.injury>0&&$('btnKick').style.display!=='none')$('btnKick').textContent='🏥 伤停·跳过本轮';
+  if(!over)$('btnKick').onclick=startMatch;
+  if(p.injury>0&&!over)$('btnKick').textContent='🏥 伤停·跳过本轮';
   renderTactic();
   $('hTp').textContent=`(${p.tp})`;
   renderTable();
@@ -1941,13 +1946,26 @@ function seasonEnd(){
   S.seasonAvg=avg;
   // 续约谈判资格：表现出色可谈条件
   S.nego=avg>=7.0&&!S.negoDone?{done:false}:null;
+  S.seasonDone=p.season;S.seasonLines=lines; // 已结算标记：防止刷新后重复领奖
+  renderSeasonEnd();
+}
+function resumeSeasonEnd(){ // 赛季末在主页刷新/读档后的续接入口
+  const p=S.player;
+  if(S.cup){cupGo();return}
+  if(S.seasonDone===p.season){renderSeasonEnd();return}
+  const ct=cupType();
+  if(ct&&ntQualified()&&!S.cup){startCup(ct);return}
+  seasonEnd();
+}
+function renderSeasonEnd(){
+  const p=S.player,avg=S.seasonAvg||6,lines=S.seasonLines||[];
   let offerHtml='';
-  if(S.nego)offerHtml+=`<h2 style="margin-top:14px">🖋️ 续约谈判</h2><div id="negoBox" class="row" style="background:var(--card2);border-left:3px solid var(--green);padding:10px 12px;margin-top:8px">
+  if(S.nego&&!S.nego.done)offerHtml+=`<h2 style="margin-top:14px">🖋️ 续约谈判</h2><div id="negoBox" class="row" style="background:var(--card2);border-left:3px solid var(--green);padding:10px 12px;margin-top:8px">
     <div class="grow" style="font-size:13.5px">俱乐部想和你谈续约——出色的赛季给了你筹码。</div>
     <button class="btn" onclick="nego(0)">要求涨薪30%</button>
     <button class="btn ghost" onclick="nego(1)">要求签字费</button></div>`;
-  if(S.offers.length){
-    offerHtml='<h2 style="margin-top:14px">📨 转会报价</h2>'+S.offers.map((o,i)=>
+  if(S.offers&&S.offers.length){
+    offerHtml+='<h2 style="margin-top:14px">📨 转会报价</h2>'+S.offers.map((o,i)=>
       `<div class="row" style="background:var(--card2);border-left:3px solid var(--green);padding:10px 12px;margin-top:8px">
         <div class="grow">${badge(o,20)}<b>${o.name}</b> <span style="color:var(--dim);font-size:13px">${LEAGUES[o.lg].name} · 球队实力 ${o.str}</span></div>
         <button class="btn" onclick="acceptOffer(${i})">接受转会</button></div>`).join('')+
