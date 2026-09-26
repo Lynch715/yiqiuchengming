@@ -317,6 +317,49 @@ const FA_STAGES=['32强','16强','8强','半决赛','决赛'];
 const FA_PRIZE=[5,10,20,40,100];
 const contPool=()=>(LG().cont==='ucl'?UCL_POOL:ACL_POOL).filter(o=>!LG().teams.some(t=>t.n===o.n));
 const contName=()=>LG().cont==='ucl'?'欧冠':'亚冠';
+const aclKoAfter=()=>[0.55,0.72,0.9].map(f=>Math.round(f*S.rounds)); // 洲际淘汰赛：1/4、半决赛、决赛
+const ACL_KO_NAMES=['1/4决赛','半决赛','决赛'];
+function aclKoPrize(st){return LG().cont==='ucl'?[200,400][st]:[40,80][st]} // 赢下该轮的晋级奖金（决赛另算）
+function aclChampPrize(){return LG().cont==='ucl'?1500:300}
+function aclKoOpp(){ // 越往后越强：1/4全池随机，半决赛前10，决赛前6
+  const k=S.aclKO,used=[...S.aclGroup.opps.map(x=>x.name),...k.used];
+  const pool=contPool().filter(o=>!used.includes(o.n)).sort((a,b)=>b.s-a.s);
+  const top=k.stage===0?pool:k.stage===1?pool.slice(0,10):pool.slice(0,6);
+  const o=rnd(top.length?top:pool);k.used.push(o.n);
+  return {name:o.n,str:o.s,c1:o.c1,c2:o.c2};
+}
+function schedCups(){ // 联赛轮次推进后：周中杯赛排期
+  if(S.round>=S.rounds)return;
+  if(S.fa&&S.fa.alive&&S.fa.stage<=4&&faAfter().includes(S.round))S.cupQ.push({comp:'fa'});
+  if(S.aclActive&&S.aclGroup&&S.aclGroup.idx<3&&aclAfter().includes(S.round))S.cupQ.push({comp:'acl'});
+  const k=S.aclKO;
+  if(k&&k.alive&&k.stage<3&&aclKoAfter()[k.stage]<=S.round&&!S.cupQ.some(q=>q.comp==='aclko'))
+    S.cupQ.push({comp:'aclko',opp:aclKoOpp()});
+}
+function aclGroupDone(){ // 小组赛第3场后当场判定出线
+  const g=S.aclGroup,cn=contName();
+  const ok=g.pts>=4||(g.pts===3&&Math.random()<0.4);
+  S.aclKO={stage:0,alive:ok,rec:[],used:[],groupOut:!ok};
+  return ok?`🎉 小组出线（积${g.pts}分）！${cn}1/4决赛将在联赛第${aclKoAfter()[0]}轮后打响。`
+           :`积${g.pts}分，小组未能出线，${cn}之旅到此为止。`;
+}
+function aclKoResult(win,oppName,score){ // 淘汰赛结果：奖金/荣誉/记录，返回提示文字
+  const p=S.player,k=S.aclKO,st=k.stage,cn=contName();
+  k.rec.push(`${ACL_KO_NAMES[st]} ${win?'胜':'负'}${oppName}${score?' '+score:''}`);
+  if(win){
+    k.stage++;
+    if(k.stage>=3){
+      k.alive=false;k.champ=true;const pz=aclChampPrize();
+      p.honors.push(`第${p.season}季${cn}冠军`);p.money+=pz;p.earnings+=pz;p.pop=clamp(p.pop+20,0,100);
+      return `👑 ${LG().cont==='ucl'?'欧洲之巅':'亚洲之巅'}！${cn}冠军！奖金+${pz}万，人气+20`;
+    }
+    const pr=aclKoPrize(st);p.money+=pr;p.earnings+=pr;
+    return `晋级${cn}${ACL_KO_NAMES[k.stage]}！奖金 +${pr}万（将在联赛第${aclKoAfter()[k.stage]}轮后进行）`;
+  }
+  k.alive=false;
+  if(st===2){p.honors.push(`第${p.season}季${cn}亚军`);return `止步${cn}决赛，拿到亚军。`}
+  return `${cn}之旅止步${ACL_KO_NAMES[st]}。`;
+}
 const faName=()=>LG().cup;
 const PEN_SITU={id:'pen',name:'点球（决定命运）',spread:0.7,bspd:6.2,kspd:0.02,reach:1.35};
 const FK_SITU={id:'fk',name:'任意球（绕过人墙）',spread:1.25,bspd:5.6,kspd:0.03,reach:1.2};
@@ -462,7 +505,7 @@ function genTask(){ // 教练军令状
 }
 function newSeasonComps(){ // 杯赛与状态初始化
   S.cupQ=[];S.fa={alive:true,stage:0};
-  S.aclActive=!!S.aclNext&&!!LG().cont;S.aclNext=false;
+  S.aclActive=!!S.aclNext&&!!LG().cont;S.aclNext=false;S.aclKO=null;
   S.aclGroup=S.aclActive?{idx:0,pts:0,rec:[],
     opps:shuffle(contPool()).slice(0,3).map(o=>({name:o.n,str:o.s,c1:o.c1,c2:o.c2}))}:null;
   S.player.form=50;
@@ -518,6 +561,7 @@ function goHome(){
     const q=S.cupQ[0];
     if(q.comp==='acl'&&!(S.aclGroup&&S.aclGroup.idx<3)){S.cupQ.shift();continue}
     if(q.comp==='fa'&&!(S.fa&&S.fa.alive&&S.fa.stage<=4)){S.cupQ.shift();continue}
+    if(q.comp==='aclko'&&!(S.aclKO&&S.aclKO.alive&&q.opp)){S.cupQ.shift();continue}
     break;
   }
   if(S.cupQ&&S.cupQ.length){
@@ -527,6 +571,9 @@ function goHome(){
     else if(q.comp==='nt'){
       const ht=q.home?CN_NT:q.opp,at=q.home?q.opp:CN_NT;
       $('hNext').innerHTML=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-weight:700">${badge(ht,20)}${ht.name}<span style="color:var(--dim);font-weight:400">vs</span>${badge(at,20)}${at.name}</div><span style="color:var(--dim)">🇨🇳 ${ntWindowName()} · 对手实力 ${q.opp.str} · ${q.home?'主场':'客场'}</span>`+warns;
+    }else if(q.comp==='aclko'){
+      const o=q.opp,st=S.aclKO.stage;
+      $('hNext').innerHTML=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-weight:700">🌟 ${contName()}${ACL_KO_NAMES[st]} <span style="color:var(--dim);font-weight:400">vs</span> ${badge(o,20)}${o.name}</div><span style="color:var(--dim)">对手实力 ${o.str} · 单场淘汰，战平进入点球大战！</span>`+taskLine+warns;
     }else{
       const o=S.aclGroup.opps[S.aclGroup.idx];
       $('hNext').innerHTML=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-weight:700">🌏 ${contName()}小组赛第${S.aclGroup.idx+1}场 <span style="color:var(--dim);font-weight:400">vs</span> ${badge(o,20)}${o.name}</div><span style="color:var(--dim)">对手实力 ${o.str} · 洲际之巅的较量</span>`+taskLine+warns;
@@ -728,9 +775,13 @@ function skipInjured(){
     else if(q.comp==='fa'){
       if(win){S.fa.stage++;if(S.fa.stage>4)S.fa.alive=false;txt=`${faName()}：队友们顶住了，晋级！`}
       else{S.fa.alive=false;txt=`${faName()}：没有你的球队遗憾出局……`}
+    }else if(q.comp==='aclko'){
+      const w=Math.random()<clamp(0.5+(S.teams[0].str-q.opp.str)*0.03,0.1,0.85);
+      const st=S.aclKO.stage;
+      txt=`${contName()}${ACL_KO_NAMES[st]}：你伤缺看台，球队${w?'顶住压力晋级':'倒下了'}。`+aclKoResult(w,q.opp.name+'(伤缺)','');
     }else{
       const g=S.aclGroup;g.pts+=win?3:0;g.rec.push(win?'胜(伤缺)':'负(伤缺)');g.idx++;
-      txt=`${contName()}小组赛：你在看台上看完了全场，球队${win?'赢了':'输了'}。`;
+      txt=`${contName()}小组赛：你在看台上看完了全场，球队${win?'赢了':'输了'}。`+(g.idx>=3?aclGroupDone():'');
     }
   }else if(S.round<S.rounds){
     const fx=S.schedule[S.round];
@@ -745,9 +796,7 @@ function skipInjured(){
     }
     S.round++;
     if(S.rivals)S.rivals.forEach(r=>r.g+=pois(r.rate));
-    // 伤停期间杯赛照常排期
-    if(S.fa&&S.fa.alive&&S.fa.stage<=4&&faAfter().includes(S.round))S.cupQ.push({comp:'fa'});
-    if(S.aclActive&&S.aclGroup&&S.aclGroup.idx<3&&aclAfter().includes(S.round))S.cupQ.push({comp:'acl'});
+    schedCups(); // 伤停期间杯赛照常排期
     txt=`联赛第${S.round}轮：你伤停缺席，球队 ${gA}:${gB} ${gA>gB?'获胜':gA===gB?'战平':'落败'}。`;
   }
   const over=S.round>=S.rounds&&!(S.cupQ&&S.cupQ.length);
@@ -915,7 +964,8 @@ function beginClubCup(q){
     opp={name:o.n,c1:o.c1,c2:o.c2,str:o.s+ri(-2,2)};
   }else if(q.comp==='nt'){ // 国家队：国际比赛日
     beginMatch({opp:q.opp,home:q.home,cup:'ntm'});return;
-  }else opp=S.aclGroup.opps[S.aclGroup.idx];
+  }else if(q.comp==='aclko')opp=q.opp;
+  else opp=S.aclGroup.opps[S.aclGroup.idx];
   beginMatch({opp,home:Math.random()<0.5,cup:null,club:q.comp});
 }
 function beginMatch(cfg){
@@ -1626,11 +1676,7 @@ function endMatch(){
   S.chem=clamp(S.chem+(win?2:draw?1:0)+(M.assists>0?1:0),35,100);
   if(S.rivals)S.rivals.forEach(r=>r.g+=pois(r.rate));
   S.round++;
-  // 周中杯赛排期（随本场结果一起存档，刷新不丢）
-  if(S.round<S.rounds){
-    if(S.fa&&S.fa.alive&&S.fa.stage<=4&&faAfter().includes(S.round))S.cupQ.push({comp:'fa'});
-    if(S.aclActive&&S.aclGroup&&S.aclGroup.idx<3&&aclAfter().includes(S.round))S.cupQ.push({comp:'acl'});
-  }
+  schedCups(); // 周中杯赛排期（随本场结果一起存档，刷新不丢）
   const newAch=checkAch(),newPerks=checkPerks();
   $('lb3').textContent='射门';$('lb4').textContent='获得训练点';
   // 渲染
@@ -1656,7 +1702,7 @@ function endMatch(){
 /* ============ 俱乐部杯赛（足协杯/亚冠） ============ */
 function endClubMatch(){
   log('—— 全场比赛结束 ——','d');
-  if(M.club==='fa'&&M.gT===M.gO){ // 足协杯淘汰赛：平局点球决胜
+  if((M.club==='fa'||M.club==='aclko')&&M.gT===M.gO){ // 淘汰赛：平局点球决胜
     log('90分钟战平！进入点球大战……你被推上了主罚点！','y');
     M.penMode=true;
     openShot(PEN_SITU);
@@ -1700,13 +1746,17 @@ function settleClub(penWin){
       if(S.fa.stage>4)S.fa.alive=false;
     }else{S.fa.alive=false;note=`${faName()}之旅结束。`}
     head=`${faName()}${FA_STAGES[st]} vs ${M.opp.name} · ${win?'晋级！🎉':'出局'}${penWin!==undefined?'（点球）':''}`;
+  }else if(M.club==='aclko'){
+    const st=S.aclKO.stage,pen=penWin!==undefined;
+    note=aclKoResult(win,M.opp.name,`${M.gT}:${M.gO}${pen?'(点球)':''}`);
+    head=`${contName()}${ACL_KO_NAMES[st]} vs ${M.opp.name} · ${win?'晋级！🎉':'出局'}${pen?'（点球）':''}`;
   }else{
     const g=S.aclGroup;
     g.pts+=win?3:draw?1:0;
     g.rec.push(`${win?'胜':draw?'平':'负'}${M.opp.name} ${M.gT}:${M.gO}`);
     g.idx++;
     head=`${contName()}小组赛 vs ${M.opp.name} · ${win?'胜利 🎉':draw?'战平':'告负'}（积${g.pts}分）`;
-    note=g.idx>=3?'小组赛踢完，出线结果赛季末揭晓。':'';
+    note=g.idx>=3?aclGroupDone():'';
   }
   $('rScore').textContent=`${M.gT} : ${M.gO}`;
   $('rVs').textContent=head;
@@ -1896,7 +1946,19 @@ function seasonEnd(){
   if(S.aclActive&&S.aclGroup&&S.aclGroup.idx>=3){
     const g=S.aclGroup,cn=contName();
     lines.push(`${cn}小组赛：${g.rec.join('；')}（积${g.pts}分）`);
-    if(g.pts>=5||(g.pts>=4&&Math.random()<0.6)){
+    if(S.aclKO){ // 新版：淘汰赛真踢
+      const k=S.aclKO;
+      if(k.groupOut)lines.push(`${cn}小组赛未能出线。`);
+      else{
+        while(k.alive){ // 兜底：万一有没踢的轮次，按实力模拟
+          const o=aclKoOpp(),w=Math.random()<clamp(0.5+(S.teams[0].str+(overall()-55)*0.35-o.str)*0.03,0.1,0.85);
+          aclKoResult(w,o.name+'(模拟)','');
+        }
+        k.rec.forEach(r=>lines.push(`${cn}${r}`));
+        if(k.champ)lines.push(`👑 ${LG().cont==='ucl'?'欧洲之巅':'亚洲之巅'}！${cn}冠军！`);
+        else if(k.stage===2)lines.push('止步决赛，虽败犹荣。');
+      }
+    }else if(g.pts>=5||(g.pts>=4&&Math.random()<0.6)){ // 旧档兜底：赛季末模拟
       const stages=[`${cn}1/4决赛`,`${cn}半决赛`,`${cn}决赛`];
       const myStr=S.teams[0].str+(overall()-55)*0.35;
       const opps=shuffle(contPool().filter(o=>!g.opps.some(x=>x.name===o.n)));
