@@ -363,6 +363,8 @@ function loadGame(){
     if(!p.ach)p.ach={};
     if(!p.history)p.history=[];
     if(p.wageUp==null)p.wageUp=0;
+    if(p.form==null||isNaN(p.form))p.form=50;
+    if(isNaN(p.money))p.money=0;if(isNaN(p.earnings))p.earnings=0;
     if(p.caps==null){p.caps=0;p.ntGoals=0}
     if(S.tactic==null)S.tactic='bal';
     if(S.chem==null)S.chem=40;
@@ -511,6 +513,13 @@ function goHome(){
       (p.energy<50?`<br><span style="color:var(--gold)">⚠️ 精力不足（${p.energy}），比赛中会明显脚软</span>`:'')+
       (p.injury>0?`<br><span style="color:var(--red)">🏥 你有伤在身，还需伤停 ${p.injury} 轮</span>`:'');
   let over=false;
+  // 清理失效的杯赛队列（旧档：小组赛已踢完/足协杯已结束却仍排着）
+  while(S.cupQ&&S.cupQ.length){
+    const q=S.cupQ[0];
+    if(q.comp==='acl'&&!(S.aclGroup&&S.aclGroup.idx<3)){S.cupQ.shift();continue}
+    if(q.comp==='fa'&&!(S.fa&&S.fa.alive&&S.fa.stage<=4)){S.cupQ.shift();continue}
+    break;
+  }
   if(S.cupQ&&S.cupQ.length){
     const q=S.cupQ[0];
     if(q.comp==='fa')
@@ -863,11 +872,12 @@ const EVENTS=[
      const po=ri(4,9),en=ri(3,6);p.pop=clamp(p.pop+po,0,100);p.energy=clamp(p.energy-en,0,100);
      const men=Math.random()<0.5&&p.attrs.men<95?1:0;if(men)p.attrs.men++;
      return `操场上全是追着球跑的孩子，像极了当年的你。人气+${po}${men?'，心理+1':''}，精力-${en}`}},
-   {l:'寄一箱签名足球过去',f:p=>{p.money-=1;const po=ri(1,3);p.pop=clamp(p.pop+po,0,100);return `孩子们收到球很开心。花费1万，人气+${po}`}}]},
+   {l:'寄一箱签名足球过去',cond:p=>p.money>=1,f:p=>{p.money-=1;const po=ri(1,3);p.pop=clamp(p.pop+po,0,100);return `孩子们收到球很开心。花费1万，人气+${po}`}}]},
 ];
 let EV=null;
 function showEvent(){
   const p=S.player;
+  save(); // 精力恢复等已生效，先落盘
   const pool=EVENTS.filter(e=>!e.cond||e.cond(p));
   EV=rnd(pool);
   $('evTitle').textContent=EV.title;
@@ -1616,6 +1626,11 @@ function endMatch(){
   S.chem=clamp(S.chem+(win?2:draw?1:0)+(M.assists>0?1:0),35,100);
   if(S.rivals)S.rivals.forEach(r=>r.g+=pois(r.rate));
   S.round++;
+  // 周中杯赛排期（随本场结果一起存档，刷新不丢）
+  if(S.round<S.rounds){
+    if(S.fa&&S.fa.alive&&S.fa.stage<=4&&faAfter().includes(S.round))S.cupQ.push({comp:'fa'});
+    if(S.aclActive&&S.aclGroup&&S.aclGroup.idx<3&&aclAfter().includes(S.round))S.cupQ.push({comp:'acl'});
+  }
   const newAch=checkAch(),newPerks=checkPerks();
   $('lb3').textContent='射门';$('lb4').textContent='获得训练点';
   // 渲染
@@ -1661,6 +1676,7 @@ function resolveShootout(res){
 }
 function settleClub(penWin){
   const p=S.player;
+  S.cupQ.shift(); // 先出队再存档，防止刷新后重踢一场
   const win=penWin!==undefined?penWin:M.gT>M.gO;
   const draw=penWin===undefined&&M.gT===M.gO;
   let rating=6.0+M.goals*0.95+M.assists*0.7+M.keyp*0.15+M.saved*0.1-M.missed*0.35-M.badpass*0.15+(win?0.4:draw?0.1:-0.3);
@@ -1702,7 +1718,7 @@ function settleClub(penWin){
   $('rNote').innerHTML=`${note} 精力剩余 <b style="color:var(--gold)">${p.energy}</b> · 状态 ${p.form}`;
   $('rSeason').innerHTML='';
   $('rBtn').textContent='返回';
-  $('rBtn').onclick=()=>{S.cupQ.shift();save();goHome()};
+  $('rBtn').onclick=goHome;
   show('scResult');save();
 }
 
@@ -1722,6 +1738,7 @@ function ntCallup(){ // 国际比赛日征召：两场国家队比赛插入赛�
   $('evText').innerHTML=`国家队主帅<b>${NT_COACH}</b>的电话打到了俱乐部：${ntWindowName()}两场，主场对 ${badge(opps[0],16)}${opps[0].name}，客场对 ${badge(opps[1],16)}${opps[1].name}。<br>${isCN()?'':'从欧洲飞回来的长途航班也挡不住你——'}为国出战！`;
   $('evBtns').innerHTML='<button class="btn" onclick="closeEv()">收拾行囊，报到！</button>';
   $('evOverlay').classList.remove('hidden');
+  save();
   return true;
 }
 function startCup(type){
@@ -1735,7 +1752,11 @@ function startCup(type){
 }
 function cupGo(){
   $('evOverlay').classList.add('hidden');
-  const c=S.cup,opp=c.ko>=0?c.koOpps[c.ko]:c.opps[c.idx];
+  const c=S.cup;
+  if(c.out!=null){cupFinish(c.out);return} // 淘汰赛已出局
+  if(c.ko<0&&c.idx>=3){cupKnockout();return} // 小组赛已踢完
+  if(c.ko>=3){cupFinish(4);return} // 决赛已赢
+  const opp=c.ko>=0?c.koOpps[c.ko]:c.opps[c.idx];
   beginMatch({opp,home:true,cup:c.type});
 }
 function endCupMatch(){ // 国家队比赛结束：国际比赛日 / 大赛小组赛 / 大赛淘汰赛
@@ -1760,8 +1781,9 @@ function settleNT(win,draw,pen){
   p.caps=(p.caps||0)+1;p.ntGoals=(p.ntGoals||0)+M.goals;
   let head='',note=`人气 <b style="color:var(--green)">${p.pop}</b> · 球探关注 <b style="color:var(--green)">${p.scout}</b> · 国家队 ${p.caps}场${p.ntGoals}球`,btn,fn;
   if(M.cup==='ntm'){
+    S.cupQ.shift(); // 先出队再存档
     head=`${ntWindowName()} vs ${M.opp.name} · ${win?'胜利 🎉':draw?'战平':'告负'}`;
-    btn=S.cupQ.length>1?'下一场':'回到俱乐部';fn=()=>{S.cupQ.shift();save();goHome()};
+    btn=S.cupQ.length?'下一场':'回到俱乐部';fn=goHome;
   }else{
     const c=S.cup,nm=NT[c.type].name;
     c.goals+=M.goals;c.ratings.push(rating);
@@ -1775,7 +1797,7 @@ function settleNT(win,draw,pen){
       c.rec.push(`${KO_NAMES[c.ko]}${w?'胜':'负'}${M.opp.name} ${M.gT}:${M.gO}${pen!==undefined?'(点球)':''}`);
       head=`${nm}${KO_NAMES[c.ko]} vs ${M.opp.name} · ${w?'晋级！🎉':'出局'}${pen!==undefined?'（点球）':''}`;
       if(w){c.ko++;if(c.ko>=3){btn='捧起奖杯！';fn=()=>cupFinish(4)}else{btn=`备战${KO_NAMES[c.ko]}`;fn=cupGo}}
-      else{const st=c.ko+1;btn='大赛落幕';fn=()=>cupFinish(st)}
+      else{const st=c.ko+1;c.out=st;btn='大赛落幕';fn=()=>cupFinish(st)}
     }
   }
   $('rScore').textContent=`${M.gT} : ${M.gO}`;
@@ -1816,7 +1838,7 @@ function cupFinish(stage){ // 0未出线 1八强 2四强 3亚军 4冠军
   if(hn){p.honors.push(hn);lines.push(`🏆 荣誉入账：${hn}${mo?` · 奖金+${mo}万`:''} · 人气+${po}`)}
   if(c.goals>=4){p.honors.push(`${nm}金靴`);lines.push(`👟 ${c.goals}粒进球荣膺${nm}金靴！`)}
   p.money+=mo;p.earnings+=mo;p.pop=clamp(p.pop+po,0,100);
-  S.cupLines=lines;S.cup=null;
+  S.cupLines=lines;S.cup=null;S.cupDone=p.season; // 本季大赛已结算，防刷新重开
   $('evTitle').textContent=`${nm}征程落幕`;
   $('evText').innerHTML=lines.map(l=>`<div style="line-height:2">${l}</div>`).join('');
   $('evBtns').innerHTML='<button class="btn" onclick="cupClose()">回到俱乐部</button>';
@@ -1833,12 +1855,9 @@ function afterResult(){
   p.energy=clamp(p.energy+Math.round(rec),0,100); // 一周自然恢复
   if(S.round>=S.rounds){
     const ct=cupType();
-    if(ct&&ntQualified()&&!S.cup){startCup(ct);return} // 赛季末国家队大赛
+    if(ct&&ntQualified()&&!S.cup&&S.cupDone!==p.season){startCup(ct);return} // 赛季末国家队大赛
     seasonEnd();return;
   }
-  // 周中杯赛排期
-  if(S.fa&&S.fa.alive&&S.fa.stage<=4&&faAfter().includes(S.round))S.cupQ.push({comp:'fa'});
-  if(S.aclActive&&S.aclGroup&&S.aclGroup.idx<3&&aclAfter().includes(S.round))S.cupQ.push({comp:'acl'});
   if(ntAfter().includes(S.round)&&!S.cupQ.some(q=>q.comp==='nt')&&ntCallup())return; // 国际比赛日征召
   if(Math.random()<0.38){showEvent();return} // 周中随机事件
   goHome();
@@ -1954,7 +1973,7 @@ function resumeSeasonEnd(){ // 赛季末在主页刷新/读档后的续接入口
   if(S.cup){cupGo();return}
   if(S.seasonDone===p.season){renderSeasonEnd();return}
   const ct=cupType();
-  if(ct&&ntQualified()&&!S.cup){startCup(ct);return}
+  if(ct&&ntQualified()&&!S.cup&&S.cupDone!==p.season){startCup(ct);return}
   seasonEnd();
 }
 function renderSeasonEnd(){
@@ -1981,6 +2000,7 @@ function renderSeasonEnd(){
   $('rSeason').innerHTML='<div class="card mt" style="text-align:left">'+lines.map(l=>`<p style="line-height:2">${l}</p>`).join('')+offerHtml+retireHtml+'</div>';
   $('rBtn').textContent=S.promote?`随${S.teams[0].name}征战${upLeague().name}`:`留在${S.teams[0].name}，进入新赛季`;
   $('rBtn').onclick=()=>{
+    if(p.age>=35){retire();return}
     if(S.promote){const up=upLeague();S.lg=up.id;S.teams[0].str=Math.max(S.teams[0].str+4,up.base-2)}
     startNewSeason();
   };
@@ -1998,6 +2018,7 @@ function nego(t){ // 续约谈判
 }
 function acceptOffer(i){
   const o=S.offers[i],p=S.player;
+  if(p.age>=35){retire();return}
   p.trust=45;p.scout=clamp(p.scout-20,0,100);
   p.wageUp=0; // 新东家重新谈薪
   S.lg=o.lg;
