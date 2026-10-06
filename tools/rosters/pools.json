@@ -1,0 +1,939 @@
+{
+ "task": "pools",
+ "season": "2026-27",
+ "source": "en.wikipedia.org 各俱乐部条目 Current squad",
+ "teams": [
+  {
+   "zh": "阿贾克斯",
+   "en": "AFC Ajax",
+   "coach": "米歇尔",
+   "players": [
+    [
+     "特尔施特根",
+     "G"
+    ],
+    [
+     "尤里·巴斯",
+     "D"
+    ],
+    [
+     "克雷尔",
+     "D"
+    ],
+    [
+     "多尔贝里",
+     "F"
+    ],
+    [
+     "阿罗科达雷",
+     "F"
+    ],
+    [
+     "阿丁格拉",
+     "F"
+    ]
+   ],
+   "asof": "2 September 2026",
+   "url": "https://en.wikipedia.org/wiki/AFC_Ajax",
+   "group": "UCL_POOL"
+  },
+  {
+   "zh": "埃因霍温",
+   "en": "PSV Eindhoven",
+   "coach": "博斯",
+   "players": [
+    [
+     "奥利",
+     "G"
+    ],
+    [
+     "弗拉明戈",
+     "D"
+    ],
+    [
+     "德斯特",
+     "D"
+    ],
+    [
+     "佩皮",
+     "F"
+    ],
+    [
+     "丹尼斯·曼",
+     "F"
+    ],
+    [
+     "德里乌埃奇",
+     "F"
+    ]
+   ],
+   "asof": "21 August 2026",
+   "url": "https://en.wikipedia.org/wiki/PSV_Eindhoven",
+   "group": "UCL_POOL"
+  },
+  {
+   "zh": "本菲卡",
+   "en": "Benfica",
+   "coach": "马尔科·席尔瓦",
+   "players": [
+    [
+     "特鲁宾",
+     "G"
+    ],
+    [
+     "托马斯·阿劳若",
+     "D"
+    ],
+    [
+     "朗格莱",
+     "D"
+    ],
+    [
+     "帕夫利迪斯",
+     "F"
+    ],
+    [
+     "卢克巴基奥",
+     "F"
+    ],
+    [
+     "谢尔德鲁普",
+     "F"
+    ]
+   ],
+   "asof": "11 September 2026",
+   "url": "https://en.wikipedia.org/wiki/S.L._Benfica",
+   "group": "UCL_POOL"
+  },
+  {
+   "zh": "波尔图",
+   "en": "FC Porto",
+   "coach": "法里奥利",
+   "players": [
+    [
+     "迪奥戈·科斯塔",
+     "G"
+    ],
+    [
+     "基维奥尔",
+     "D"
+    ],
+    [
+     "贝德纳雷克",
+     "D"
+    ],
+    [
+     "萨穆",
+     "F"
+    ],
+    [
+     "佩佩",
+     "F"
+    ],
+    [
+     "圣地亚哥·希门尼斯",
+     "F"
+    ]
+   ],
+   "asof": "",
+   "url": "https://en.wikipedia.org/wiki/FC_Porto",
+   "group": "UCL_POOL"
+  },
+  {
+   "zh": "葡萄牙体育",
+   "en": "Sporting CP",
+   "coach": "鲁伊·博尔热斯",
+   "players": [
+    [
+     "鲁伊·席尔瓦",
+     "G"
+    ],
+    [
+     "伊纳西奥",
+     "D"
+    ],
+    [
+     "德巴斯特",
+     "D"
+    ],
+    [
+     "约安尼迪斯",
+     "F"
+    ],
+    [
+     "路易斯·苏亚雷斯",
+     "F"
+    ],
+    [
+     "卡塔莫",
+     "F"
+    ]
+   ],
+   "asof": "1 September 2026",
+   "url": "https://en.wikipedia.org/wiki/Sporting_CP",
+   "group": "UCL_POOL"
+  },
+  {
+   "zh": "凯尔特人",
+   "en": "Celtic",
+   "coach": "马丁·奥尼尔",
+   "players": [
+    [
+     "西尼萨洛",
+     "G"
+    ],
+    [
+     "卡特-维克斯",
+     "D"
+    ],
+    [
+     "蒂尔尼",
+     "D"
+    ],
+    [
+     "若塔",
+     "F"
+    ],
+    [
+     "梁贤俊",
+     "F"
+    ],
+    [
+     "霍格",
+     "F"
+    ]
+   ],
+   "asof": "2 September 2026",
+   "url": "https://en.wikipedia.org/wiki/Celtic_F.C.",
+   "group": "UCL_POOL"
+  },
+  {
+   "zh": "加拉塔萨雷",
+   "en": "Galatasaray",
+   "coach": "奥坎·布鲁克",
+   "players": [
+    [
+     "恰基尔",
+     "G"
+    ],
+    [
+     "达文森·桑切斯",
+     "D"
+    ],
+    [
+     "巴尔达克奇",
+     "D"
+    ],
+    [
+     "奥斯梅恩",
+     "F"
+    ],
+    [
+     "莱昂",
+     "F"
+    ],
+    [
+     "萨内",
+     "F"
+    ]
+   ],
+   "asof": "29 August 2026",
+   "url": "https://en.wikipedia.org/wiki/Galatasaray_S.K._(football)",
+   "group": "UCL_POOL"
+  },
+  {
+   "zh": "布鲁日",
+   "en": "Club Brugge",
+   "coach": "莱科",
+   "players": [
+    [
+     "杰克斯",
+     "G"
+    ],
+    [
+     "奥多涅斯",
+     "D"
+    ],
+    [
+     "梅谢勒",
+     "D"
+    ],
+    [
+     "特雷索尔迪",
+     "F"
+    ],
+    [
+     "福布斯",
+     "F"
+    ],
+    [
+     "维尔曼特",
+     "F"
+    ]
+   ],
+   "asof": "10 October 2025",
+   "url": "https://en.wikipedia.org/wiki/Club_Brugge_KV",
+   "group": "UCL_POOL"
+  },
+  {
+   "zh": "萨尔茨堡红牛",
+   "en": "Red Bull Salzburg",
+   "coach": "罗尔",
+   "players": [
+    [
+     "弗吕希特尔",
+     "G"
+    ],
+    [
+     "莫尔加拉",
+     "D"
+    ],
+    [
+     "莱纳",
+     "D"
+    ],
+    [
+     "林斯特伦",
+     "F"
+    ],
+    [
+     "拜多",
+     "F"
+    ],
+    [
+     "韦尔泰森",
+     "F"
+    ]
+   ],
+   "asof": "1 September 2026",
+   "url": "https://en.wikipedia.org/wiki/FC_Red_Bull_Salzburg",
+   "group": "UCL_POOL"
+  },
+  {
+   "zh": "川崎前锋",
+   "en": "Kawasaki Frontale",
+   "coach": "长谷部茂利",
+   "players": [
+    [
+     "山口瑠伊",
+     "G"
+    ],
+    [
+     "丸山祐市",
+     "D"
+    ],
+    [
+     "佐佐木旭",
+     "D"
+    ],
+    [
+     "伊藤达哉",
+     "F"
+    ],
+    [
+     "小林悠",
+     "F"
+    ],
+    [
+     "罗马尼奇",
+     "F"
+    ]
+   ],
+   "asof": "1 July 2026",
+   "url": "https://en.wikipedia.org/wiki/Kawasaki_Frontale",
+   "group": "ACL_POOL"
+  },
+  {
+   "zh": "浦和红钻",
+   "en": "Urawa Red Diamonds",
+   "coach": "田中达也",
+   "players": [
+    [
+     "西川周作",
+     "G"
+    ],
+    [
+     "石原广教",
+     "D"
+    ],
+    [
+     "达尼洛·博萨",
+     "D"
+    ],
+    [
+     "基斯·特林",
+     "F"
+    ],
+    [
+     "小森飞绚",
+     "F"
+    ],
+    [
+     "安部裕葵",
+     "F"
+    ]
+   ],
+   "asof": "23 February 2026",
+   "url": "https://en.wikipedia.org/wiki/Urawa_Red_Diamonds",
+   "group": "ACL_POOL"
+  },
+  {
+   "zh": "神户胜利船",
+   "en": "Vissel Kobe",
+   "coach": "斯基贝",
+   "players": [
+    [
+     "前川黛也",
+     "G"
+    ],
+    [
+     "山川哲史",
+     "D"
+    ],
+    [
+     "酒井高德",
+     "D"
+    ],
+    [
+     "大迫勇也",
+     "F"
+    ],
+    [
+     "武藤嘉纪",
+     "F"
+    ],
+    [
+     "佐佐木大树",
+     "F"
+    ]
+   ],
+   "asof": "1 August 2026",
+   "url": "https://en.wikipedia.org/wiki/Vissel_Kobe",
+   "group": "ACL_POOL"
+  },
+  {
+   "zh": "横滨F水手",
+   "en": "Yokohama F. Marinos",
+   "coach": "科里卡",
+   "players": [
+    [
+     "朴一圭",
+     "G"
+    ],
+    [
+     "角田凉太朗",
+     "D"
+    ],
+    [
+     "托马斯·邓",
+     "D"
+    ],
+    [
+     "谷村海那",
+     "F"
+    ],
+    [
+     "宫市亮",
+     "F"
+    ],
+    [
+     "克鲁",
+     "F"
+    ]
+   ],
+   "asof": "1 August 2026",
+   "url": "https://en.wikipedia.org/wiki/Yokohama_F._Marinos",
+   "group": "ACL_POOL"
+  },
+  {
+   "zh": "町田泽维亚",
+   "en": "FC Machida Zelvia",
+   "coach": "黑田刚",
+   "players": [
+    [
+     "谷晃生",
+     "G"
+    ],
+    [
+     "昌子源",
+     "D"
+    ],
+    [
+     "中山雄太",
+     "D"
+    ],
+    [
+     "相马勇纪",
+     "F"
+    ],
+    [
+     "藤尾翔太",
+     "F"
+    ],
+    [
+     "米切尔·杜克",
+     "F"
+    ]
+   ],
+   "asof": "8 August 2026",
+   "url": "https://en.wikipedia.org/wiki/FC_Machida_Zelvia",
+   "group": "ACL_POOL"
+  },
+  {
+   "zh": "全北现代",
+   "en": "Jeonbuk Hyundai Motors",
+   "coach": "郑正镕",
+   "players": [
+    [
+     "宋范根",
+     "G"
+    ],
+    [
+     "金英彬",
+     "D"
+    ],
+    [
+     "金泰焕",
+     "D"
+    ],
+    [
+     "李承佑",
+     "F"
+    ],
+    [
+     "蒂亚戈·奥罗博",
+     "F"
+    ],
+    [
+     "孔帕尼奥",
+     "F"
+    ]
+   ],
+   "asof": "25 August 2026",
+   "url": "https://en.wikipedia.org/wiki/Jeonbuk_Hyundai_Motors_FC",
+   "group": "ACL_POOL"
+  },
+  {
+   "zh": "蔚山HD",
+   "en": "Ulsan HD",
+   "coach": "金铉锡",
+   "players": [
+    [
+     "赵贤祐",
+     "G"
+    ],
+    [
+     "金英权",
+     "D"
+    ],
+    [
+     "郑昇炫",
+     "D"
+    ],
+    [
+     "马尔康",
+     "F"
+    ],
+    [
+     "埃里克·法里亚斯",
+     "F"
+    ],
+    [
+     "亚戈·卡列洛",
+     "F"
+    ]
+   ],
+   "asof": "19 August 2026",
+   "url": "https://en.wikipedia.org/wiki/Ulsan_HD_FC",
+   "group": "ACL_POOL"
+  },
+  {
+   "zh": "浦项铁人",
+   "en": "Pohang Steelers",
+   "coach": "朴泰河",
+   "players": [
+    [
+     "黄仁宰",
+     "G"
+    ],
+    [
+     "全珉洸",
+     "D"
+    ],
+    [
+     "朴赞镛",
+     "D"
+    ],
+    [
+     "安在俊",
+     "F"
+    ],
+    [
+     "儒尼尼奥·罗沙",
+     "F"
+    ],
+    [
+     "特兰齐斯卡",
+     "F"
+    ]
+   ],
+   "asof": "31 July 2026",
+   "url": "https://en.wikipedia.org/wiki/Pohang_Steelers",
+   "group": "ACL_POOL"
+  },
+  {
+   "zh": "光州FC",
+   "en": "Gwangju FC",
+   "coach": "李政圭",
+   "players": [
+    [
+     "金敬民",
+     "G"
+    ],
+    [
+     "安英奎",
+     "D"
+    ],
+    [
+     "范格伦斯文",
+     "D"
+    ],
+    [
+     "河昇云",
+     "F"
+    ],
+    [
+     "弗里永松",
+     "F"
+    ],
+    [
+     "艾尔代尔",
+     "F"
+    ]
+   ],
+   "asof": "6 August 2026",
+   "url": "https://en.wikipedia.org/wiki/Gwangju_FC",
+   "group": "ACL_POOL"
+  },
+  {
+   "zh": "利雅得新月",
+   "en": "Al Hilal",
+   "coach": "因扎吉",
+   "players": [
+    [
+     "布努",
+     "G"
+    ],
+    [
+     "库利巴利",
+     "D"
+    ],
+    [
+     "特奥·埃尔南德斯",
+     "D"
+    ],
+    [
+     "马丁内利",
+     "F"
+    ],
+    [
+     "沃特金斯",
+     "F"
+    ],
+    [
+     "萨利姆·达瓦萨里",
+     "F"
+    ]
+   ],
+   "asof": "3 September 2026",
+   "url": "https://en.wikipedia.org/wiki/Al_Hilal_SFC",
+   "group": "ACL_POOL"
+  },
+  {
+   "zh": "吉达联合",
+   "en": "Al-Ittihad",
+   "coach": "延斯·维辛",
+   "players": [
+    [
+     "拉伊科维奇",
+     "G"
+    ],
+    [
+     "西米奇",
+     "D"
+    ],
+    [
+     "卡德什",
+     "D"
+    ],
+    [
+     "恩内斯里",
+     "F"
+    ],
+    [
+     "迪亚比",
+     "F"
+    ],
+    [
+     "贝尔赫温",
+     "F"
+    ]
+   ],
+   "asof": "4 February 2026",
+   "url": "https://en.wikipedia.org/wiki/Al-Ittihad_Club_(Jeddah)",
+   "group": "ACL_POOL"
+  },
+  {
+   "zh": "利雅得胜利",
+   "en": "Al Nassr",
+   "coach": "波斯特科格鲁",
+   "players": [
+    [
+     "本托",
+     "G"
+    ],
+    [
+     "西马坎",
+     "D"
+    ],
+    [
+     "伊尼戈·马丁内斯",
+     "D"
+    ],
+    [
+     "C罗",
+     "F"
+    ],
+    [
+     "若昂·菲利克斯",
+     "F"
+    ],
+    [
+     "科曼",
+     "F"
+    ]
+   ],
+   "asof": "6 September 2026",
+   "url": "https://en.wikipedia.org/wiki/Al-Nassr_FC",
+   "group": "ACL_POOL"
+  },
+  {
+   "zh": "吉达国民",
+   "en": "Al-Ahli",
+   "coach": "普西奇",
+   "players": [
+    [
+     "门迪",
+     "G"
+    ],
+    [
+     "德米拉尔",
+     "D"
+    ],
+    [
+     "伊巴涅斯",
+     "D"
+    ],
+    [
+     "托尼",
+     "F"
+    ],
+    [
+     "特林康",
+     "F"
+    ],
+    [
+     "加莱诺",
+     "F"
+    ]
+   ],
+   "asof": "25 April 2026",
+   "url": "https://en.wikipedia.org/wiki/Al-Ahli_Saudi_FC",
+   "group": "ACL_POOL"
+  },
+  {
+   "zh": "柔佛DT",
+   "en": "Johor Darul Ta'zim",
+   "coach": "希斯科·穆尼奥斯",
+   "players": [
+    [
+     "克里斯蒂安·阿巴德",
+     "G"
+    ],
+    [
+     "沙恩·洛瑞",
+     "D"
+    ],
+    [
+     "马修·戴维斯",
+     "D"
+    ],
+    [
+     "贝尔格森",
+     "F"
+    ],
+    [
+     "若昂·菲盖雷多",
+     "F"
+    ],
+    [
+     "沙哈布·扎赫迪",
+     "F"
+    ]
+   ],
+   "asof": "31 August 2026",
+   "url": "https://en.wikipedia.org/wiki/Johor_Darul_Ta%27zim_F.C.",
+   "group": "ACL_POOL"
+  },
+  {
+   "zh": "武里南联",
+   "en": "Buriram United",
+   "coach": "马克·杰克逊",
+   "players": [
+    [
+     "埃瑟里奇",
+     "G"
+    ],
+    [
+     "潘萨",
+     "D"
+    ],
+    [
+     "柯蒂斯·古德",
+     "D"
+    ],
+    [
+     "比索利",
+     "F"
+    ],
+    [
+     "素帕猜",
+     "F"
+    ],
+    [
+     "施默",
+     "F"
+    ]
+   ],
+   "asof": "22 August 2026",
+   "url": "https://en.wikipedia.org/wiki/Buriram_United_F.C.",
+   "group": "ACL_POOL"
+  },
+  {
+   "zh": "墨尔本城",
+   "en": "Melbourne City",
+   "coach": "维德马尔",
+   "players": [
+    [
+     "弗雷克",
+     "G"
+    ],
+    [
+     "贝希奇",
+     "D"
+    ],
+    [
+     "德尔布里奇",
+     "D"
+    ],
+    [
+     "莱基",
+     "F"
+    ],
+    [
+     "马比尔",
+     "F"
+    ],
+    [
+     "卡普托",
+     "F"
+    ]
+   ],
+   "asof": "17 September 2026",
+   "url": "https://en.wikipedia.org/wiki/Melbourne_City_FC",
+   "group": "ACL_POOL"
+  },
+  {
+   "zh": "悉尼FC",
+   "en": "Sydney FC",
+   "coach": "基斯诺博",
+   "players": [
+    [
+     "霍夫斯洛特",
+     "G"
+    ],
+    [
+     "考特尼-珀金斯",
+     "D"
+    ],
+    [
+     "瑞安·格兰特",
+     "D"
+    ],
+    [
+     "坎普萨诺",
+     "F"
+    ],
+    [
+     "阿科尔·阿孔",
+     "F"
+    ],
+    [
+     "加布里埃尔·波波维奇",
+     "F"
+    ]
+   ],
+   "asof": "17 September 2026",
+   "url": "https://en.wikipedia.org/wiki/Sydney_FC",
+   "group": "ACL_POOL"
+  },
+  {
+   "zh": "艾因",
+   "en": "Al Ain",
+   "coach": "伊维奇",
+   "players": [
+    [
+     "哈立德·伊萨",
+     "G"
+    ],
+    [
+     "拉米·拉比亚",
+     "D"
+    ],
+    [
+     "斯科科",
+     "D"
+    ],
+    [
+     "苏菲安·拉希米",
+     "F"
+    ],
+    [
+     "吉亚库马基斯",
+     "F"
+    ],
+    [
+     "侯赛因·拉希米",
+     "F"
+    ]
+   ],
+   "asof": "14 November 2023",
+   "url": "https://en.wikipedia.org/wiki/Al_Ain_FC",
+   "group": "ACL_POOL"
+  }
+ ],
+ "not_in_game_list": [],
+ "game_teams_not_in_league": [],
+ "problems": [
+  "波尔图：俱乐部条目表格标 2 June 2025（内容已是 2025-26 后阵容），用 2026-27 赛季页核对，球员一致",
+  "布鲁日：维基表格日期停在 10 October 2025，未更新到 2026 秋；表中 1 号写的是 Yann Sommer，存疑，主力门将改取 Nordin Jackers",
+  "浦和红钻：表格日期 23 February 2026，主教练为临时主帅田中达也（Tatsuya Tanaka, interim），可能已换帅",
+  "吉达联合：表格日期 4 February 2026，主教练 Jens Wissing 未能二次核实",
+  "吉达国民：表格日期 25 April 2026，主教练 Marino Pušić 未能二次核实",
+  "利雅得胜利：Al_Nassr_FC 页抓不到名字且教练写 TBA；改抓 Al-Nassr_FC 得到 6 September 2026 名单和主帅 Ange Postecoglou，两次结果不一致，教练存疑",
+  "艾因：维基表格日期 14 November 2023，名单可能过时；赛季页不可抓",
+  "全北现代：俱乐部条目（Jeonbuk_Hyundai_Motors_FC）抓不到表格，从 Jeonbuk_Hyundai_Motors 重定向页抓到 25 August 2026 名单，人数偏多（50+），可能混入预备队",
+  "萨尔茨堡红牛/阿贾克斯/利雅得新月等部分名单与 2025 年认知差异较大（如特尔施特根在阿贾克斯、沃特金斯和马丁内利在利雅得新月），按维基原样采用，未能第二来源核实",
+  "关根贵大（Takahiro Sekine）同时出现在浦和红钻和悉尼FC名单中，两队均未选他"
+ ]
+}

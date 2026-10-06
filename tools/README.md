@@ -1,15 +1,19 @@
-# 数据生成工具（tools/）
+# 数据工具（tools/）
 
-`index.html` 里的 `LEAGUES/ACL_POOL/UCL_POOL/NT_*` 与 `CRESTS`（base64 队徽）由这两个脚本生成：
+## 真实名单（2026-10 起）
 
-- `clubs.py`：13 个联赛的球队、实力、真实球员、教练；队徽来源标注（fc:=FCLOGO 仓库目录名，lh:/lhh:=luukhopman/football-logos，scr:=milosmladenovic5/football_clubs_logo_scraper）。
-- `build_data.py`：把队徽裁成 40px WebP、算主色，输出 `data.js` 与 `crests.js`。
+- `rosters/<联赛>.json`：13 个联赛（cn1/cn2/cn3、en/es/it/de/fr 的 1、2 级）每队一线队名单 `[中文名, 位置G/D/M/F]`、主教练、中乙分组。来源：英文维基各俱乐部 "Current squad"，抓取时间 2026-10-07。
+- `rosters/pools.json`：欧冠、亚冠里不属于这 13 个联赛的球队，每队 6 人（门将、2 后卫、3 前锋）。
+- `rosters/nt.json`：中国队全名单 + 其余国家队每队 6 人。
+- `rosters/new_crests.json`：本次新补的队徽（40px WebP）。
+- `build_rosters.py`：把上面这些合并进 `index.html` 的 `LEAGUES / ACL_POOL / UCL_POOL / NT_* / CN_SQUAD / CRESTS`。保留原有实力值、颜色和联赛参数。
 
-重建步骤（在能 clone GitHub 的机器上）：
-1. `git clone --depth 1 --filter=blob:none --sparse https://github.com/FCLOGO/fclogo.top`，`git sparse-checkout set src/data/logos/{CFA,theFA,RFEF,FIGC,DFB,FFF,JFA,KFA,SAFF,FA,FAT,FAM,UAE}`
-2. `git clone --depth 1 --filter=blob:none https://github.com/luukhopman/football-logos fl`（取 logos/ 与 history/）
-3. `git clone --depth 1 --filter=blob:none --no-checkout https://github.com/milosmladenovic5/football_clubs_logo_scraper scr`
-4. 用 build_data.py 顶部的索引逻辑生成 index.json，再运行 `python3 build_data.py`
-5. 把 data.js 内容替换 index.html 中 `const LEAGUES=` … `const NT_WORLD=` 段，crests.js 替换第一个 `<script>` 块。
+更新名单：改 rosters/*.json → `python3 tools/build_rosters.py`。
 
-改球队/球员只需改 `clubs.py` 再重跑。
+注意：
+- 中国球员的汉字是按维基拼音推断的，发现写错直接改 json 里那个名字再重建。
+- 英冠只保留 20 队（不收博尔顿、卡迪夫城、林肯城、查尔顿），西乙不收两支预备队。
+
+## 旧流程（队徽、联赛骨架）
+
+- `clubs.py` / `build_data.py`：最早生成 LEAGUES 与 CRESTS 的脚本，需要先 clone FCLOGO、luukhopman/football-logos、football_clubs_logo_scraper（见脚本顶部）。现在球队名单以 rosters/ 为准，clubs.py 里的球队和球员已过时，只在重建全部队徽时才用。

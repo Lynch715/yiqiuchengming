@@ -1,0 +1,1644 @@
+{
+ "task": "nt",
+ "season": "2026",
+ "source": "https://en.wikipedia.org/wiki/China_national_football_team",
+ "teams": [
+  {
+   "zh": "中国",
+   "en": "China",
+   "coach": "邵佳一",
+   "players": [
+    [
+     "颜骏凌",
+     "G"
+    ],
+    [
+     "刘殿座",
+     "G"
+    ],
+    [
+     "颜炳亮",
+     "G"
+    ],
+    [
+     "蹇韬",
+     "G"
+    ],
+    [
+     "刘洋",
+     "D"
+    ],
+    [
+     "蒋光太",
+     "D"
+    ],
+    [
+     "高准翼",
+     "D"
+    ],
+    [
+     "魏震",
+     "D"
+    ],
+    [
+     "韩鹏飞",
+     "D"
+    ],
+    [
+     "李扬",
+     "D"
+    ],
+    [
+     "张爱辉",
+     "D"
+    ],
+    [
+     "王耿瑞",
+     "D"
+    ],
+    [
+     "王上源",
+     "M"
+    ],
+    [
+     "谢文能",
+     "M"
+    ],
+    [
+     "戴伟浚",
+     "M"
+    ],
+    [
+     "高天意",
+     "M"
+    ],
+    [
+     "巴顿",
+     "M"
+    ],
+    [
+     "塞尔吉尼奥",
+     "M"
+    ],
+    [
+     "陈蒲",
+     "M"
+    ],
+    [
+     "黄嘉辉",
+     "M"
+    ],
+    [
+     "程进",
+     "M"
+    ],
+    [
+     "杨明洋",
+     "M"
+    ],
+    [
+     "钟义浩",
+     "M"
+    ],
+    [
+     "布尼亚明·阿卜杜萨拉木",
+     "M"
+    ],
+    [
+     "杨明锐",
+     "M"
+    ],
+    [
+     "韦世豪",
+     "F"
+    ],
+    [
+     "王子铭",
+     "F"
+    ],
+    [
+     "陶强龙",
+     "F"
+    ],
+    [
+     "杜月徵",
+     "F"
+    ],
+    [
+     "赵松源",
+     "F"
+    ]
+   ],
+   "asof": "2026年9-10月友谊赛名单（马尔代夫、新西兰、巴勒斯坦、塔吉克斯坦）",
+   "url": "https://en.wikipedia.org/wiki/China_national_football_team",
+   "group": "china"
+  },
+  {
+   "zh": "日本",
+   "en": "Japan",
+   "coach": "森保一",
+   "players": [
+    [
+     "铃木彩艳",
+     "G"
+    ],
+    [
+     "板仓滉",
+     "D"
+    ],
+    [
+     "富安健洋",
+     "D"
+    ],
+    [
+     "上田绮世",
+     "F"
+    ],
+    [
+     "前田大然",
+     "F"
+    ],
+    [
+     "町野修斗",
+     "F"
+    ]
+   ],
+   "asof": "2026世界杯名单（29 June 2026）",
+   "url": "https://en.wikipedia.org/wiki/Japan_national_football_team",
+   "group": "asia"
+  },
+  {
+   "zh": "韩国",
+   "en": "South Korea",
+   "coach": "",
+   "players": [
+    [
+     "金承奎",
+     "G"
+    ],
+    [
+     "金玟哉",
+     "D"
+    ],
+    [
+     "薛英佑",
+     "D"
+    ],
+    [
+     "孙兴慜",
+     "F"
+    ],
+    [
+     "曹圭成",
+     "F"
+    ],
+    [
+     "吴贤揆",
+     "F"
+    ]
+   ],
+   "asof": "2026世界杯名单（24 June 2026）",
+   "url": "https://en.wikipedia.org/wiki/South_Korea_national_football_team",
+   "group": "asia"
+  },
+  {
+   "zh": "伊朗",
+   "en": "Iran",
+   "coach": "阿米尔·加莱诺伊",
+   "players": [
+    [
+     "阿里雷扎·贝兰万德",
+     "G"
+    ],
+    [
+     "埃赫桑·哈吉萨菲",
+     "D"
+    ],
+    [
+     "拉明·雷扎伊安",
+     "D"
+    ],
+    [
+     "迈赫迪·塔雷米",
+     "F"
+    ],
+    [
+     "萨达尔·阿兹蒙",
+     "F"
+    ],
+    [
+     "沙哈卜·扎赫迪",
+     "F"
+    ]
+   ],
+   "asof": "24 September 2026",
+   "url": "https://en.wikipedia.org/wiki/Iran_national_football_team",
+   "group": "asia"
+  },
+  {
+   "zh": "澳大利亚",
+   "en": "Australia",
+   "coach": "托尼·波波维奇",
+   "players": [
+    [
+     "马修·瑞安",
+     "G"
+    ],
+    [
+     "哈里·苏塔尔",
+     "D"
+    ],
+    [
+     "阿齐兹·贝希奇",
+     "D"
+    ],
+    [
+     "马修·莱基",
+     "F"
+    ],
+    [
+     "内斯托里·伊兰昆达",
+     "F"
+    ],
+    [
+     "阿韦尔·马比尔",
+     "F"
+    ]
+   ],
+   "asof": "3 July 2026",
+   "url": "https://en.wikipedia.org/wiki/Australia_men%27s_national_soccer_team",
+   "group": "asia"
+  },
+  {
+   "zh": "沙特阿拉伯",
+   "en": "Saudi Arabia",
+   "coach": "约尔戈斯·多尼斯",
+   "players": [
+    [
+     "穆罕默德·奥瓦伊斯",
+     "G"
+    ],
+    [
+     "哈桑·坦巴克提",
+     "D"
+    ],
+    [
+     "阿卜杜勒拉·阿姆里",
+     "D"
+    ],
+    [
+     "菲拉斯·布赖坎",
+     "F"
+    ],
+    [
+     "阿卜杜拉·哈姆丹",
+     "F"
+    ],
+    [
+     "苏尔坦·曼达什",
+     "F"
+    ]
+   ],
+   "asof": "2026海湾杯名单",
+   "url": "https://en.wikipedia.org/wiki/Saudi_Arabia_national_football_team",
+   "group": "asia"
+  },
+  {
+   "zh": "卡塔尔",
+   "en": "Qatar",
+   "coach": "胡伦·洛佩特吉",
+   "players": [
+    [
+     "梅沙尔·巴尔沙姆",
+     "G"
+    ],
+    [
+     "布阿莱姆·胡希",
+     "D"
+    ],
+    [
+     "佩德罗·米格尔",
+     "D"
+    ],
+    [
+     "阿克拉姆·阿菲夫",
+     "F"
+    ],
+    [
+     "阿尔莫埃兹·阿里",
+     "F"
+    ],
+    [
+     "哈桑·海多斯",
+     "F"
+    ]
+   ],
+   "asof": "2026世界杯名单（24 June 2026）",
+   "url": "https://en.wikipedia.org/wiki/Qatar_national_football_team",
+   "group": "asia"
+  },
+  {
+   "zh": "乌兹别克斯坦",
+   "en": "Uzbekistan",
+   "coach": "法比奥·卡纳瓦罗",
+   "players": [
+    [
+     "阿卜杜瓦希德·内马托夫",
+     "G"
+    ],
+    [
+     "阿卜杜科迪尔·胡萨诺夫",
+     "D"
+    ],
+    [
+     "霍吉阿克巴尔·阿利若诺夫",
+     "D"
+    ],
+    [
+     "埃尔多尔·绍穆罗多夫",
+     "F"
+    ],
+    [
+     "阿齐兹别克·阿莫诺夫",
+     "F"
+    ],
+    [
+     "穆罕默达利·乌林博耶夫",
+     "F"
+    ]
+   ],
+   "asof": "2026年9-10月友谊赛名单",
+   "url": "https://en.wikipedia.org/wiki/Uzbekistan_national_football_team",
+   "group": "asia"
+  },
+  {
+   "zh": "伊拉克",
+   "en": "Iraq",
+   "coach": "格拉汉姆·阿诺德",
+   "players": [
+    [
+     "贾拉勒·哈桑",
+     "G"
+    ],
+    [
+     "雷宾·苏拉卡",
+     "D"
+    ],
+    [
+     "扎伊德·塔赫辛",
+     "D"
+    ],
+    [
+     "艾曼·侯赛因",
+     "F"
+    ],
+    [
+     "穆哈纳德·阿里",
+     "F"
+    ],
+    [
+     "阿里·哈马迪",
+     "F"
+    ]
+   ],
+   "asof": "2026世界杯名单",
+   "url": "https://en.wikipedia.org/wiki/Iraq_national_football_team",
+   "group": "asia"
+  },
+  {
+   "zh": "约旦",
+   "en": "Jordan",
+   "coach": "巴杜·扎基",
+   "players": [
+    [
+     "亚齐德·阿布莱拉",
+     "G"
+    ],
+    [
+     "亚赞·阿拉布",
+     "D"
+    ],
+    [
+     "伊赫桑·哈达德",
+     "D"
+    ],
+    [
+     "穆萨·塔马里",
+     "F"
+    ],
+    [
+     "阿里·奥尔万",
+     "F"
+    ],
+    [
+     "马哈茂德·马尔迪",
+     "F"
+    ]
+   ],
+   "asof": "2026世界杯名单（27 June 2026）",
+   "url": "https://en.wikipedia.org/wiki/Jordan_national_football_team",
+   "group": "asia"
+  },
+  {
+   "zh": "阿联酋",
+   "en": "United Arab Emirates",
+   "coach": "兹拉特科·达利奇",
+   "players": [
+    [
+     "哈立德·伊萨",
+     "G"
+    ],
+    [
+     "哈利法·哈马迪",
+     "D"
+    ],
+    [
+     "哈立德·易卜拉欣",
+     "D"
+    ],
+    [
+     "阿里·萨利赫",
+     "F"
+    ],
+    [
+     "苏尔坦·阿迪勒",
+     "F"
+    ],
+    [
+     "布鲁诺",
+     "F"
+    ]
+   ],
+   "asof": "2026海湾杯名单",
+   "url": "https://en.wikipedia.org/wiki/United_Arab_Emirates_national_football_team",
+   "group": "asia"
+  },
+  {
+   "zh": "阿曼",
+   "en": "Oman",
+   "coach": "塔里克·塞克蒂乌伊",
+   "players": [
+    [
+     "法伊兹·鲁沙迪",
+     "G"
+    ],
+    [
+     "阿里·布赛迪",
+     "D"
+    ],
+    [
+     "艾哈迈德·哈米西",
+     "D"
+    ],
+    [
+     "伊萨姆·萨布希",
+     "F"
+    ],
+    [
+     "穆赫辛·加萨尼",
+     "F"
+    ],
+    [
+     "阿卜杜勒拉赫曼·穆沙伊弗里",
+     "F"
+    ]
+   ],
+   "asof": "October 2025（世预赛第四阶段名单，维基未更新2026名单）",
+   "url": "https://en.wikipedia.org/wiki/Oman_national_football_team",
+   "group": "asia"
+  },
+  {
+   "zh": "巴林",
+   "en": "Bahrain",
+   "coach": "德拉甘·塔拉伊奇",
+   "players": [
+    [
+     "赛义德·穆罕默德·贾法尔",
+     "G"
+    ],
+    [
+     "瓦利德·海亚姆",
+     "D"
+    ],
+    [
+     "阿明·本纳迪",
+     "D"
+    ],
+    [
+     "伊斯梅尔·阿卜杜拉蒂夫",
+     "F"
+    ],
+    [
+     "马赫迪·阿卜杜勒贾巴尔",
+     "F"
+    ],
+    [
+     "侯赛因·阿卜杜勒卡里姆",
+     "F"
+    ]
+   ],
+   "asof": "June 2025（世预赛名单，维基未更新2026名单）",
+   "url": "https://en.wikipedia.org/wiki/Bahrain_national_football_team",
+   "group": "asia"
+  },
+  {
+   "zh": "泰国",
+   "en": "Thailand",
+   "coach": "安东尼·哈德森",
+   "players": [
+    [
+     "帕蒂瓦特·卡迈",
+     "G"
+    ],
+    [
+     "苏帕南·布里拉特",
+     "D"
+    ],
+    [
+     "尼古拉斯·米克尔森",
+     "D"
+    ],
+    [
+     "苏帕猜·猜德",
+     "F"
+    ],
+    [
+     "提拉萨·波伊皮迈",
+     "F"
+    ],
+    [
+     "朱德·孙苏普-贝尔",
+     "F"
+    ]
+   ],
+   "asof": "2026东南亚锦标赛名单",
+   "url": "https://en.wikipedia.org/wiki/Thailand_national_football_team",
+   "group": "asia"
+  },
+  {
+   "zh": "越南",
+   "en": "Vietnam",
+   "coach": "金相植",
+   "players": [
+    [
+     "邓文林",
+     "G"
+    ],
+    [
+     "段文厚",
+     "D"
+    ],
+    [
+     "裴黄越英",
+     "D"
+    ],
+    [
+     "阮春山",
+     "F"
+    ],
+    [
+     "阮廷北",
+     "F"
+    ],
+    [
+     "范嘉兴",
+     "F"
+    ]
+   ],
+   "asof": "2026东南亚锦标赛名单",
+   "url": "https://en.wikipedia.org/wiki/2026_ASEAN_Championship_squads",
+   "group": "asia"
+  },
+  {
+   "zh": "印度尼西亚",
+   "en": "Indonesia",
+   "coach": "约翰·赫德曼",
+   "players": [
+    [
+     "马尔滕·帕斯",
+     "G"
+    ],
+    [
+     "凯文·迪克斯",
+     "D"
+    ],
+    [
+     "里兹基·里多",
+     "D"
+    ],
+    [
+     "奥勒·罗梅尼",
+     "F"
+    ],
+    [
+     "埃吉·毛拉纳",
+     "F"
+    ],
+    [
+     "拉格纳·奥拉特曼贡",
+     "F"
+    ]
+   ],
+   "asof": "2026东南亚锦标赛名单（22 September 2026）",
+   "url": "https://en.wikipedia.org/wiki/Indonesia_national_football_team",
+   "group": "asia"
+  },
+  {
+   "zh": "朝鲜",
+   "en": "North Korea",
+   "coach": "李光天",
+   "players": [
+    [
+     "姜周赫",
+     "G"
+    ],
+    [
+     "张国哲",
+     "D"
+    ],
+    [
+     "金裕成",
+     "D"
+    ],
+    [
+     "李日成",
+     "F"
+    ],
+    [
+     "金国真",
+     "F"
+    ],
+    [
+     "李朝国",
+     "F"
+    ]
+   ],
+   "asof": "June 2025（世预赛名单，维基未更新2026名单）",
+   "url": "https://en.wikipedia.org/wiki/North_Korea_national_football_team",
+   "group": "asia"
+  },
+  {
+   "zh": "叙利亚",
+   "en": "Syria",
+   "coach": "何塞·拉纳",
+   "players": [
+    [
+     "艾哈迈德·马达尼亚",
+     "G"
+    ],
+    [
+     "哈立德·库尔多格利",
+     "D"
+    ],
+    [
+     "艾哈姆·奥苏",
+     "D"
+    ],
+    [
+     "马哈茂德·马瓦斯",
+     "F"
+    ],
+    [
+     "奥马尔·索马",
+     "F"
+    ],
+    [
+     "穆罕默德·哈拉克",
+     "F"
+    ]
+   ],
+   "asof": "27 September 2026",
+   "url": "https://en.wikipedia.org/wiki/Syria_national_football_team",
+   "group": "asia"
+  },
+  {
+   "zh": "马来西亚",
+   "en": "Malaysia",
+   "coach": "陈清和",
+   "players": [
+    [
+     "阿兹里·加尼",
+     "G"
+    ],
+    [
+     "鲁文蒂兰",
+     "D"
+    ],
+    [
+     "乌拜杜拉·沙姆苏尔",
+     "D"
+    ],
+    [
+     "沙菲克·艾哈迈德",
+     "F"
+    ],
+    [
+     "保罗·若苏埃",
+     "F"
+    ],
+    [
+     "穆罕默杜·苏马雷",
+     "F"
+    ]
+   ],
+   "asof": "19 August 2026（2026东南亚锦标赛）",
+   "url": "https://en.wikipedia.org/wiki/Malaysia_national_football_team",
+   "group": "asia"
+  },
+  {
+   "zh": "阿根廷",
+   "en": "Argentina",
+   "coach": "利昂内尔·斯卡洛尼",
+   "players": [
+    [
+     "埃米利亚诺·马丁内斯",
+     "G"
+    ],
+    [
+     "克里斯蒂安·罗梅罗",
+     "D"
+    ],
+    [
+     "利桑德罗·马丁内斯",
+     "D"
+    ],
+    [
+     "利昂内尔·梅西",
+     "F"
+    ],
+    [
+     "劳塔罗·马丁内斯",
+     "F"
+    ],
+    [
+     "胡利安·阿尔瓦雷斯",
+     "F"
+    ]
+   ],
+   "asof": "2026世界杯名单（27 June 2026）",
+   "url": "https://en.wikipedia.org/wiki/Argentina_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "法国",
+   "en": "France",
+   "coach": "迪迪埃·德尚",
+   "players": [
+    [
+     "迈克·梅尼昂",
+     "G"
+    ],
+    [
+     "威廉·萨利巴",
+     "D"
+    ],
+    [
+     "达约·于帕梅卡诺",
+     "D"
+    ],
+    [
+     "基利安·姆巴佩",
+     "F"
+    ],
+    [
+     "乌斯曼·登贝莱",
+     "F"
+    ],
+    [
+     "迈克尔·奥利塞",
+     "F"
+    ]
+   ],
+   "asof": "2026世界杯名单（26 June 2026）",
+   "url": "https://en.wikipedia.org/wiki/France_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "西班牙",
+   "en": "Spain",
+   "coach": "路易斯·德拉富恩特",
+   "players": [
+    [
+     "乌奈·西蒙",
+     "G"
+    ],
+    [
+     "保·库巴西",
+     "D"
+    ],
+    [
+     "迪恩·赫伊森",
+     "D"
+    ],
+    [
+     "拉明·亚马尔",
+     "F"
+    ],
+    [
+     "尼科·威廉斯",
+     "F"
+    ],
+    [
+     "米克尔·奥亚萨瓦尔",
+     "F"
+    ]
+   ],
+   "asof": "2026-27欧国联名单（2026年9-10月）",
+   "url": "https://en.wikipedia.org/wiki/Spain_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "英格兰",
+   "en": "England",
+   "coach": "托马斯·图赫尔",
+   "players": [
+    [
+     "乔丹·皮克福德",
+     "G"
+    ],
+    [
+     "约翰·斯通斯",
+     "D"
+    ],
+    [
+     "马克·格伊",
+     "D"
+    ],
+    [
+     "哈里·凯恩",
+     "F"
+    ],
+    [
+     "布卡约·萨卡",
+     "F"
+    ],
+    [
+     "安东尼·戈登",
+     "F"
+    ]
+   ],
+   "asof": "2026世界杯名单",
+   "url": "https://en.wikipedia.org/wiki/England_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "巴西",
+   "en": "Brazil",
+   "coach": "卡洛·安切洛蒂",
+   "players": [
+    [
+     "阿利松",
+     "G"
+    ],
+    [
+     "马尔基尼奥斯",
+     "D"
+    ],
+    [
+     "加布里埃尔·马加良斯",
+     "D"
+    ],
+    [
+     "维尼修斯",
+     "F"
+    ],
+    [
+     "拉菲尼亚",
+     "F"
+    ],
+    [
+     "恩德里克",
+     "F"
+    ]
+   ],
+   "asof": "2026年9-10月友谊赛名单；门将取自2026世界杯名单",
+   "url": "https://en.wikipedia.org/wiki/Brazil_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "葡萄牙",
+   "en": "Portugal",
+   "coach": "若热·热苏斯",
+   "players": [
+    [
+     "迪奥戈·科斯塔",
+     "G"
+    ],
+    [
+     "鲁本·迪亚斯",
+     "D"
+    ],
+    [
+     "努诺·门德斯",
+     "D"
+    ],
+    [
+     "克里斯蒂亚诺·罗纳尔多",
+     "F"
+    ],
+    [
+     "拉斐尔·莱昂",
+     "F"
+    ],
+    [
+     "贡萨洛·拉莫斯",
+     "F"
+    ]
+   ],
+   "asof": "27 September 2026",
+   "url": "https://en.wikipedia.org/wiki/Portugal_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "荷兰",
+   "en": "Netherlands",
+   "coach": "罗纳德·科曼",
+   "players": [
+    [
+     "巴特·费尔布鲁根",
+     "G"
+    ],
+    [
+     "维吉尔·范迪克",
+     "D"
+    ],
+    [
+     "米基·范德芬",
+     "D"
+    ],
+    [
+     "科迪·加克波",
+     "F"
+    ],
+    [
+     "孟菲斯·德佩",
+     "F"
+    ],
+    [
+     "多尼尔·马伦",
+     "F"
+    ]
+   ],
+   "asof": "2026世界杯名单",
+   "url": "https://en.wikipedia.org/wiki/Netherlands_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "德国",
+   "en": "Germany",
+   "coach": "于尔根·克洛普",
+   "players": [
+    [
+     "马克-安德烈·特尔施特根",
+     "G"
+    ],
+    [
+     "乔纳森·塔",
+     "D"
+    ],
+    [
+     "尼科·施洛特贝克",
+     "D"
+    ],
+    [
+     "尼克·沃尔特马德",
+     "F"
+    ],
+    [
+     "约纳坦·布尔卡特",
+     "F"
+    ],
+    [
+     "塞尔日·格纳布里",
+     "F"
+    ]
+   ],
+   "asof": "24 September 2026",
+   "url": "https://en.wikipedia.org/wiki/Germany_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "比利时",
+   "en": "Belgium",
+   "coach": "马克·范博梅尔",
+   "players": [
+    [
+     "蒂博·库尔图瓦",
+     "G"
+    ],
+    [
+     "蒂莫西·卡斯塔涅",
+     "D"
+    ],
+    [
+     "泽诺·德巴斯特",
+     "D"
+    ],
+    [
+     "罗梅卢·卢卡库",
+     "F"
+    ],
+    [
+     "杰雷米·多库",
+     "F"
+    ],
+    [
+     "莱安德罗·特罗萨德",
+     "F"
+    ]
+   ],
+   "asof": "2026世界杯名单",
+   "url": "https://en.wikipedia.org/wiki/Belgium_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "克罗地亚",
+   "en": "Croatia",
+   "coach": "兹拉特科·达利奇",
+   "players": [
+    [
+     "多米尼克·利瓦科维奇",
+     "G"
+    ],
+    [
+     "约什科·格瓦迪奥尔",
+     "D"
+    ],
+    [
+     "约西普·斯塔尼西奇",
+     "D"
+    ],
+    [
+     "安德烈·克拉马里奇",
+     "F"
+    ],
+    [
+     "伊万·佩里西奇",
+     "F"
+    ],
+    [
+     "安特·布迪米尔",
+     "F"
+    ]
+   ],
+   "asof": "2026世界杯赛前热身赛名单（June 2026）",
+   "url": "https://en.wikipedia.org/wiki/Croatia_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "意大利",
+   "en": "Italy",
+   "coach": "罗伯托·曼奇尼",
+   "players": [
+    [
+     "詹路易吉·多纳鲁马",
+     "G"
+    ],
+    [
+     "亚历山德罗·巴斯托尼",
+     "D"
+    ],
+    [
+     "里卡多·卡拉菲奥里",
+     "D"
+    ],
+    [
+     "莫伊塞·基恩",
+     "F"
+    ],
+    [
+     "皮奥·埃斯波西托",
+     "F"
+    ],
+    [
+     "贾科莫·拉斯帕多里",
+     "F"
+    ]
+   ],
+   "asof": "2026-27欧国联名单（2026年9-10月）",
+   "url": "https://en.wikipedia.org/wiki/Italy_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "乌拉圭",
+   "en": "Uruguay",
+   "coach": "马塞洛·贝尔萨",
+   "players": [
+    [
+     "塞尔吉奥·罗切特",
+     "G"
+    ],
+    [
+     "何塞·希门尼斯",
+     "D"
+    ],
+    [
+     "罗纳德·阿劳霍",
+     "D"
+    ],
+    [
+     "达尔文·努涅斯",
+     "F"
+    ],
+    [
+     "罗德里戈·阿吉雷",
+     "F"
+    ],
+    [
+     "费德里科·维尼亚斯",
+     "F"
+    ]
+   ],
+   "asof": "26 June 2026",
+   "url": "https://en.wikipedia.org/wiki/Uruguay_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "哥伦比亚",
+   "en": "Colombia",
+   "coach": "内斯托尔·洛伦索",
+   "players": [
+    [
+     "卡米洛·巴尔加斯",
+     "G"
+    ],
+    [
+     "丹尼尔·穆尼奥斯",
+     "D"
+    ],
+    [
+     "琼·卢库米",
+     "D"
+    ],
+    [
+     "路易斯·迪亚斯",
+     "F"
+    ],
+    [
+     "约翰·科尔多瓦",
+     "F"
+    ],
+    [
+     "库乔·埃尔南德斯",
+     "F"
+    ]
+   ],
+   "asof": "2026世界杯赛前热身赛名单（June 2026）",
+   "url": "https://en.wikipedia.org/wiki/Colombia_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "摩洛哥",
+   "en": "Morocco",
+   "coach": "穆罕默德·瓦赫比",
+   "players": [
+    [
+     "亚辛·布努",
+     "G"
+    ],
+    [
+     "阿什拉夫·哈基米",
+     "D"
+    ],
+    [
+     "努赛尔·马兹拉维",
+     "D"
+    ],
+    [
+     "阿尤布·卡比",
+     "F"
+    ],
+    [
+     "布拉欣·迪亚斯",
+     "F"
+    ],
+    [
+     "苏菲安·拉希米",
+     "F"
+    ]
+   ],
+   "asof": "24 June 2026",
+   "url": "https://en.wikipedia.org/wiki/Morocco_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "墨西哥",
+   "en": "Mexico",
+   "coach": "拉斐尔·马克斯",
+   "players": [
+    [
+     "劳尔·兰赫尔",
+     "G"
+    ],
+    [
+     "埃德森·阿尔瓦雷斯",
+     "D"
+    ],
+    [
+     "约翰·巴斯克斯",
+     "D"
+    ],
+    [
+     "劳尔·希门尼斯",
+     "F"
+    ],
+    [
+     "圣地亚哥·希门尼斯",
+     "F"
+    ],
+    [
+     "亚历克西斯·维加",
+     "F"
+    ]
+   ],
+   "asof": "2026世界杯名单（5 July 2026）",
+   "url": "https://en.wikipedia.org/wiki/Mexico_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "美国",
+   "en": "United States",
+   "coach": "毛里西奥·波切蒂诺",
+   "players": [
+    [
+     "马特·特纳",
+     "G"
+    ],
+    [
+     "安东尼·罗宾逊",
+     "D"
+    ],
+    [
+     "克里斯·理查兹",
+     "D"
+    ],
+    [
+     "克里斯蒂安·普利西奇",
+     "F"
+    ],
+    [
+     "福拉林·巴洛贡",
+     "F"
+    ],
+    [
+     "里卡多·佩皮",
+     "F"
+    ]
+   ],
+   "asof": "6 July 2026",
+   "url": "https://en.wikipedia.org/wiki/United_States_men%27s_national_soccer_team",
+   "group": "world"
+  },
+  {
+   "zh": "塞内加尔",
+   "en": "Senegal",
+   "coach": "帕特里克·维埃拉",
+   "players": [
+    [
+     "莫里·迪奥",
+     "G"
+    ],
+    [
+     "卡利杜·库利巴利",
+     "D"
+    ],
+    [
+     "穆萨·尼亚卡特",
+     "D"
+    ],
+    [
+     "尼古拉斯·杰克逊",
+     "F"
+    ],
+    [
+     "伊斯梅拉·萨尔",
+     "F"
+    ],
+    [
+     "伊利曼·恩迪亚耶",
+     "F"
+    ]
+   ],
+   "asof": "25 September 2026",
+   "url": "https://en.wikipedia.org/wiki/Senegal_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "瑞士",
+   "en": "Switzerland",
+   "coach": "穆拉特·雅金",
+   "players": [
+    [
+     "格雷戈尔·科贝尔",
+     "G"
+    ],
+    [
+     "曼努埃尔·阿坎吉",
+     "D"
+    ],
+    [
+     "尼科·埃尔维迪",
+     "D"
+    ],
+    [
+     "布雷尔·恩博洛",
+     "F"
+    ],
+    [
+     "丹·恩多耶",
+     "F"
+    ],
+    [
+     "鲁本·巴尔加斯",
+     "F"
+    ]
+   ],
+   "asof": "2026世界杯名单（11 July 2026）",
+   "url": "https://en.wikipedia.org/wiki/Switzerland_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "丹麦",
+   "en": "Denmark",
+   "coach": "布莱恩·里默",
+   "players": [
+    [
+     "马兹·赫尔曼森",
+     "G"
+    ],
+    [
+     "安德烈亚斯·克里斯滕森",
+     "D"
+    ],
+    [
+     "约阿希姆·安德森",
+     "D"
+    ],
+    [
+     "拉斯穆斯·霍伊伦",
+     "F"
+    ],
+    [
+     "威廉·奥苏拉",
+     "F"
+    ],
+    [
+     "卡斯帕·赫格",
+     "F"
+    ]
+   ],
+   "asof": "June 2026（友谊赛名单）",
+   "url": "https://en.wikipedia.org/wiki/Denmark_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "挪威",
+   "en": "Norway",
+   "coach": "斯托莱·索尔巴肯",
+   "players": [
+    [
+     "厄扬·尼兰",
+     "G"
+    ],
+    [
+     "克里斯托弗·阿耶尔",
+     "D"
+    ],
+    [
+     "利奥·厄斯蒂高",
+     "D"
+    ],
+    [
+     "埃尔林·哈兰德",
+     "F"
+    ],
+    [
+     "约根·斯特兰德·拉森",
+     "F"
+    ],
+    [
+     "安东尼奥·努萨",
+     "F"
+    ]
+   ],
+   "asof": "27 September 2026",
+   "url": "https://en.wikipedia.org/wiki/Norway_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "厄瓜多尔",
+   "en": "Ecuador",
+   "coach": "",
+   "players": [
+    [
+     "埃尔南·加林德斯",
+     "G"
+    ],
+    [
+     "威廉·帕乔",
+     "D"
+    ],
+    [
+     "佩尔维斯·埃斯图皮尼安",
+     "D"
+    ],
+    [
+     "凯文·罗德里格斯",
+     "F"
+    ],
+    [
+     "约尔迪·凯塞多",
+     "F"
+    ],
+    [
+     "尼尔森·安古洛",
+     "F"
+    ]
+   ],
+   "asof": "2026年9-10月友谊赛名单",
+   "url": "https://en.wikipedia.org/wiki/Ecuador_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "加拿大",
+   "en": "Canada",
+   "coach": "杰西·马施",
+   "players": [
+    [
+     "戴恩·圣克莱尔",
+     "G"
+    ],
+    [
+     "里奇·拉里亚",
+     "D"
+    ],
+    [
+     "吕克·德富热罗勒",
+     "D"
+    ],
+    [
+     "乔纳森·戴维",
+     "F"
+    ],
+    [
+     "赛尔·拉林",
+     "F"
+    ],
+    [
+     "塔尼·奥卢瓦塞伊",
+     "F"
+    ]
+   ],
+   "asof": "26 September 2026",
+   "url": "https://en.wikipedia.org/wiki/Canada_men%27s_national_soccer_team",
+   "group": "world"
+  },
+  {
+   "zh": "埃及",
+   "en": "Egypt",
+   "coach": "霍萨姆·哈桑",
+   "players": [
+    [
+     "穆罕默德·谢纳维",
+     "G"
+    ],
+    [
+     "穆罕默德·阿卜杜勒莫奈姆",
+     "D"
+    ],
+    [
+     "拉米·拉比阿",
+     "D"
+    ],
+    [
+     "穆罕默德·萨拉赫",
+     "F"
+    ],
+    [
+     "奥马尔·马尔穆什",
+     "F"
+    ],
+    [
+     "特雷泽盖",
+     "F"
+    ]
+   ],
+   "asof": "2026世界杯名单（7 July 2026）",
+   "url": "https://en.wikipedia.org/wiki/Egypt_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "尼日利亚",
+   "en": "Nigeria",
+   "coach": "埃里克·谢勒",
+   "players": [
+    [
+     "弗朗西斯·乌佐霍",
+     "G"
+    ],
+    [
+     "卡尔文·巴西",
+     "D"
+    ],
+    [
+     "塞米·阿贾伊",
+     "D"
+    ],
+    [
+     "特雷姆·莫菲",
+     "F"
+    ],
+    [
+     "萨穆埃尔·丘克乌泽",
+     "F"
+    ],
+    [
+     "摩西·西蒙",
+     "F"
+    ]
+   ],
+   "asof": "June 2026（友谊赛名单）",
+   "url": "https://en.wikipedia.org/wiki/Nigeria_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "加纳",
+   "en": "Ghana",
+   "coach": "卡洛斯·奎罗斯",
+   "players": [
+    [
+     "劳伦斯·阿蒂-齐吉",
+     "G"
+    ],
+    [
+     "阿利杜·塞杜",
+     "D"
+    ],
+    [
+     "巴巴·拉赫曼",
+     "D"
+    ],
+    [
+     "乔丹·阿尤",
+     "F"
+    ],
+    [
+     "伊尼亚基·威廉斯",
+     "F"
+    ],
+    [
+     "埃内斯特·努阿马",
+     "F"
+    ]
+   ],
+   "asof": "2026世界杯名单（3 July 2026）",
+   "url": "https://en.wikipedia.org/wiki/Ghana_national_football_team",
+   "group": "world"
+  },
+  {
+   "zh": "新西兰",
+   "en": "New Zealand",
+   "coach": "达伦·巴泽利",
+   "players": [
+    [
+     "亚历克斯·保尔森",
+     "G"
+    ],
+    [
+     "泰勒·宾登",
+     "D"
+    ],
+    [
+     "比尔·图伊洛马",
+     "D"
+    ],
+    [
+     "克里斯·伍德",
+     "F"
+    ],
+    [
+     "本·韦恩",
+     "F"
+    ],
+    [
+     "杰西·兰德尔",
+     "F"
+    ]
+   ],
+   "asof": "2026年9-10月友谊赛名单",
+   "url": "https://en.wikipedia.org/wiki/New_Zealand_men%27s_national_football_team",
+   "group": "world"
+  }
+ ],
+ "not_in_game_list": [],
+ "game_teams_not_in_league": [],
+ "problems": [
+  "韩国：维基显示主教练空缺（Vacant），coach 留空",
+  "厄瓜多尔：维基显示主教练空缺（Vacant），coach 留空",
+  "阿曼、巴林、朝鲜：英文维基 Current squad 仍是 2025 年世预赛名单，未更新到 2026",
+  "越南：国家队条目没有 Current squad 表，改用 2026_ASEAN_Championship_squads 页",
+  "巴西：最新一期名单（2026年9-10月友谊赛）门将都是替补，门将改取 2026 世界杯名单的阿利松",
+  "德国：最新名单 FW 只列 3 人，F 取沃尔特马德、布尔卡特和格纳布里（维基标 MF）",
+  "中国队部分非国脚球员（颜炳亮、张爱辉、王耿瑞、杜月徵、赵松源、杨明锐等）汉字按拼音推断"
+ ]
+}
