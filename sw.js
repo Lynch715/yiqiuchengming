@@ -1,5 +1,5 @@
 /* 一球成名 · 离线缓存 Service Worker */
-const VER   = 'yqcm-v1';
+const VER   = 'yqcm-v2-minigames-20261006';
 const SHELL = ['./', './index.html', './manifest.json', './icon-180.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
