@@ -344,6 +344,9 @@ tr.gap td{color:var(--mute);padding:2px;font-size:11px;letter-spacing:3px;border
   .vs b{font-size:19px}
 }
 @media (prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}.goalfx{display:none}}
+.match-fast{position:sticky;bottom:0;padding:12px 0 max(12px,env(safe-area-inset-bottom));background:var(--bg);z-index:2;text-align:center}
+.match-fast small{display:block;margin-top:6px;color:var(--dim);font-size:12px}
+#btnFastKey{margin-top:8px;min-height:44px}
 </style>
 </head>
 <body>
@@ -455,6 +458,7 @@ tr.gap td{color:var(--mute);padding:2px;font-size:11px;letter-spacing:3px;border
     <div class="sb"><div class="sb-t" id="bHome"></div><div class="sb-mid"><div class="sb-score" id="bScore">0 - 0</div><div class="sb-min" id="bMin">0'</div></div><div class="sb-t r" id="bAway"></div></div>
   </div>
   <div class="card logcard"><div id="mlog"></div><div class="goalfx" id="goalFx"><b>进球</b><span id="goalFxName"></span></div></div>
+  <div class="match-fast"><button class="btn wide" id="btnFastMatch" onclick="quickSimMatch()">快速模拟 · 直接看结果</button><small>保留当前比分，按实力、状态与体能模拟剩余比赛</small></div>
 </section>
 
 <!-- 赛后 -->
@@ -512,6 +516,7 @@ tr.gap td{color:var(--mute);padding:2px;font-size:11px;letter-spacing:3px;border
     <div class="hint" id="gHint"></div>
     <div class="cvwrap"><canvas id="cv" width="480" height="330" tabindex="0" aria-label="足球小游戏：选动作按1到3，射门按空格，传球按1到3，盘带按左右方向键"></canvas><div id="gRes"></div></div>
     <div id="gBtns"></div>
+    <button class="btn ghost" id="btnFastKey" onclick="quickSimMatch()">快速模拟剩余比赛</button>
   </div>
 </div>
 
@@ -571,7 +576,7 @@ iconize(document.body);
 const reduceMotion=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}};
 const vibOn=()=>{try{return localStorage.getItem('yqcm_vib')!=='0'}catch(e){return true}};
 function setVib(on){try{localStorage.setItem('yqcm_vib',on?'1':'0')}catch(e){}showStats()}
-function goalFx(who){ // 进球横幅（本队颜色）+ 手机轻震
+function goalFx(who){if(M&&M.simulating)return; // 进球横幅（本队颜色）+ 手机轻震
   const el=$('goalFx');if(!el)return;
   $('goalFxName').textContent=who||'';
   el.classList.remove('on');void el.offsetWidth;el.classList.add('on');
@@ -1395,9 +1400,8 @@ function beginMatch(cfg){
   const opp=cfg.opp,A=S.player.attrs,p=S.player;
   const myStr=cfg.cup?ntStr():S.teams[0].str+(overall()-55)*0.35+((cfg.home||p.items.jet)?2:0);
   const tac=cfg.cup?'bal':(S.tactic||'bal');
-  const tAdj=tac==='atk'?[0.3,0.28]:tac==='def'?[-0.22,-0.42]:[0,0];
-  const lamT=clamp(1.15+(myStr-opp.str)*0.045+tAdj[0],0.15,2.6);
-  const lamO=clamp(1.15+(opp.str-myStr)*0.045+tAdj[1],0.15,2.6);
+  const rates=matchSimRates(myStr,opp,tac,p);
+  const lamT=rates.team,lamO=rates.opp;
   const eF=clamp(p.energy/100,0.4,1);
   M={fx:{home:cfg.home,opp:cfg.oppIdx},opp,cup:cfg.cup,club:cfg.club||null,min:0,gT:0,gO:0,goals:0,assists:0,shots:0,saved:0,missed:0,keyp:0,badpass:0,evs:[],ei:0,timer:null,
      gk:Math.round(opp.str+Math.random()*8-3),
@@ -1449,6 +1453,7 @@ function beginMatch(cfg){
   if(M.fb<0)log('最近几场一直没找到感觉。（属性-3）','b');
   if(M.bench)log(`${S.coach}把你放在了替补席上。`,'b');
   if(p.energy<50)log('这几天练得太狠，热身时腿还是沉的。','y');
+  for(const id of ['btnFastMatch','btnFastKey'])$(id).disabled=false;
   show('scMatch');
   runTimer();
 }
@@ -1458,6 +1463,8 @@ function updBoard(){
   $('bMin').textContent=M.min+"'";
 }
 function runTimer(){
+  if(!M||M.simulating||M.ended)return;
+  if(M.timer)clearInterval(M.timer);
   M.timer=setInterval(()=>{
     M.min++;updBoard();
     while(M.ei<M.evs.length&&M.evs[M.ei].min<=M.min){
@@ -1468,12 +1475,99 @@ function runTimer(){
     if(M.min>=90){clearInterval(M.timer);M.timer=null;endMatch()}
   },75);
 }
+/* 快速模拟：沿用本场事件和小游戏判定，只自动决策并跳过演出。 */
+function matchSimRates(myStr,opp,tac,p){
+  const num=(v,f)=>Number.isFinite(v)?v:f;
+  // 现阶段仅主角有持续状态；对手未提供状态/精力时按中性值。
+  const condition=(clamp(num(p.form,50),0,100)-50)*0.035+(clamp(num(p.energy,100),0,100)-100)*0.045;
+  const other=(clamp(num(opp.form,50),0,100)-50)*0.035+(clamp(num(opp.energy,100),0,100)-100)*0.045;
+  const gap=myStr+condition-opp.str-other;
+  const adj=tac==='atk'?[0.3,0.28]:tac==='def'?[-0.22,-0.42]:[0,0];
+  return {team:clamp(1.15+gap*0.045+adj[0],0.15,2.6),opp:clamp(1.15-gap*0.045+adj[1],0.15,2.6)};
+}
+function autoPlayQuality(){
+  const p=S.player,A=p.attrs;
+  const played=Math.max(0,M.min-(M.bench?58:0));
+  const fatigue=played/90*(28-A.sta*0.18)+(M.extraE||0);
+  const energy=clamp(p.energy-fatigue,0,100);
+  return clamp(0.22+(A.men+A.sta)/400+(p.form-50)/250+(energy-75)/230-(M.opp.str-65)/500,0.16,0.86);
+}
+function autoPlayKey(){
+  // 已经判定的phase=2结果直接结算，不重新掷随机数。
+  let guard=0;
+  while(G&&guard++<16){
+    const q=autoPlayQuality(),A=S.player.attrs;
+    if(G.mode==='scene'){
+      const weighted=G.acts.map(a=>{
+        const ac=ACTS[a],attr=ac.k?A[ac.k]:55;
+        const fit=M.intel.some(x=>TRAITS[x.id].fit.includes(a));
+        return {a,w:Math.max(1,attr-25+(fit?12:0)-(M.press[ac.t]||0)*12)};
+      });
+      let r=Math.random()*weighted.reduce((n,x)=>n+x.w,0),pick=weighted[weighted.length-1].a;
+      for(const x of weighted){r-=x.w;if(r<=0){pick=x.a;break}}
+      pickAct(pick);
+    }else if(G.mode==='shot'){
+      if(G.phase<2){
+        if(G.phase===0){
+          G.kx=240+95*Math.sin(Math.random()*Math.PI*2);
+          G.aimX=Math.random()<q?(G.kx<240?330:150):110+Math.random()*260;
+          G.aimY=100+Math.random()*125;
+        }
+        G.phase=1;
+        const good=Math.random()<q,W=preciseW();
+        G.marker=240+(Math.random()<0.5?-1:1)*(good?Math.random()*W:W+Math.random()*(150-W));
+        shoot();
+      }
+      finishKey();
+    }else if(G.mode==='pass'){
+      if(G.phase<2){
+        const mate=rnd(G.mates),good=Math.random()<q;
+        for(let i=0;i<120;i++){G.t=Math.random()*1800;if(laneOpen(mate)===good)break}
+        passClick(mate);
+      }
+      if(G.res==='12')passShot();else finishPass();
+    }else if(G.mode==='drib'){
+      if(G.phase<2){
+        const good=Math.random()<q;
+        for(let i=0;i<120;i++){G.t=Math.random()*1800;if((Math.abs(dribLean())>=leanThr())===good)break}
+        const side=good?-Math.sign(dribLean()):(Math.random()<0.5?-1:1);
+        dribClick({x:side<0?100:380});
+      }
+      if(G.res==='win')dribShot();else if(G.res==='foul')dribFK();else finishDrib();
+    }else throw new Error('未知的比赛机会类型');
+  }
+  if(G)throw new Error('比赛机会未能结束');
+}
+function quickSimMatch(){
+  if(!M||M.simulating||M.quickDone||(M.ended&&!M.penMode))return;
+  M.simulating=true;
+  if(M.timer)clearInterval(M.timer);M.timer=null;LOOP++;
+  for(const id of ['btnFastMatch','btnFastKey'])$(id).disabled=true;
+  const start=M.min;
+  try{
+    log(`${start}' 开始快速模拟，保留已有比分与表现。`,'d');
+    if(G)autoPlayKey();
+    if(!M.ended){
+      while(M.ei<M.evs.length){
+        const e=M.evs[M.ei++];M.min=Math.max(M.min,e.min);
+        if(e.t==='key'){openKey();autoPlayKey()}else handleEvent(e);
+      }
+      M.min=90;updBoard();endMatch();
+      if(M.penMode&&G)autoPlayKey();
+    }
+    M.quickDone=true;
+    $('rNote').insertAdjacentHTML('beforeend',`<br><span class="sim-note">${start>=90?'点球大战已自动模拟':`已快速模拟第 ${start}—90 分钟`} · 沿用本场实力、战术与个人状态结算</span>`);
+  }finally{
+    M.simulating=false;G=null;LOOP++;$('overlay').classList.add('hidden');
+  }
+}
+
 function handleEvent(e){
   const A=S.player.attrs;
   if(e.t==='tg'){
     M.gT++;updBoard();M.scoreLog.push({min:M.min,me:false});
     const mt=scorerOf(M.mySq.filter(x=>x.s!==S.player.name))||rnd(M.mates);
-    if(Math.random()<A.pas/140+(S.chem-40)/300){M.assists++;M.assistLog.push({min:M.min,how:`你直塞，${mt}推射破门`});log(`${M.min}' 你一脚直塞，${mt}推射破门。（助攻+1）`,'g');goalFx(`${mt} · 你助攻`)}
+    if((!M.bench||M.min>=58)&&Math.random()<A.pas/140+(S.chem-40)/300){M.assists++;M.assistLog.push({min:M.min,how:`你直塞，${mt}推射破门`});log(`${M.min}' 你一脚直塞，${mt}推射破门。（助攻+1）`,'g');goalFx(`${mt} · 你助攻`)}
     else{log(`${M.min}' ${mt}为球队破门。`,'g');goalFx(mt)}
   }else if(e.t==='og'){
     M.gO++;updBoard();M.scoreLog.push({min:M.min,opp:true});
@@ -1514,7 +1608,7 @@ function showRes(t,tone,why){
   const r=$('gRes');r.innerHTML=`<b class="${tone}">${t}</b>${why?`<small>${why}</small>`:''}`;
   r.classList.remove('on');void r.offsetWidth;r.classList.add('on');setHint('');
 }
-function startLoop(){const gr=$('gRes');if(gr){gr.classList.remove('on');gr.innerHTML=''}const dpr=Math.min(window.devicePixelRatio||1,3);cv.width=Math.round(480*dpr);cv.height=Math.round(330*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);cv.focus({preventScroll:true});LOOP++;const id=LOOP;G.last=0;G.shown=false;requestAnimationFrame(ts=>loopG(id,ts))}
+function startLoop(){if(M&&M.simulating){LOOP++;return}const gr=$('gRes');if(gr){gr.classList.remove('on');gr.innerHTML=''}const dpr=Math.min(window.devicePixelRatio||1,3);cv.width=Math.round(480*dpr);cv.height=Math.round(330*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);cv.focus({preventScroll:true});LOOP++;const id=LOOP;G.last=0;G.shown=false;requestAnimationFrame(ts=>loopG(id,ts))}
 function easeMini(t){t=clamp(t,0,1);return t*t*(3-2*t)}
 cv.addEventListener('keydown',e=>{
   if(!G||e.repeat||G.phase===2)return;
@@ -1554,7 +1648,7 @@ function shoot(){
   if(G.precise)sig*=0.3;
   sig*=md.spread||1;
   const bx=G.aimX+g()*sig, by=G.aimY+g()*sig*0.75;
-  M.shots++;
+  if(!M.penMode)M.shots++;
   G.animLen=Math.max(28,44-Math.round(sho*0.12)); // 射门高→球速快
   let res;
   if(situ.id==='fk'&&!G.precise&&Math.abs(bx-G.wallX)<G.wallW&&by>168){res='block';G.ball={x:bx,y:262};G.res=res;G.phase=2;G.anim=0;G.animLen=22;shotEv();return} // 打在人墙上（精准射门可绕过）
@@ -2496,6 +2590,8 @@ function addResult(ia,ga,ib,gb){
   else{ra.D++;rb.D++;ra.Pts++;rb.Pts++}
 }
 function endMatch(){
+  if(!M||M.ended)return;
+  M.ended=true;
   if(M.cup){endCupMatch();return}
   if(M.club){endClubMatch();return}
   const p=S.player;
