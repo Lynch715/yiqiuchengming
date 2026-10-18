@@ -1,5 +1,5 @@
 /* 一球成名 · 离线缓存 Service Worker */
-const VER   = 'yqcm-v5-fast-sim-20261015';
+const VER   = 'yqcm-v6-creator-footer-20261017';
 const SHELL = ['./', './index.html', './manifest.json', './icon-180.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
