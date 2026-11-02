@@ -388,6 +388,7 @@ tr.gap td{color:var(--mute);padding:2px;font-size:11px;letter-spacing:3px;border
 </defs></svg>
 <header><h1>⚽ 一球成名<span>·</span>足球人生</h1><div id="hdInfo"></div></header>
 <main>
+<p id="storageStatus" role="status" hidden style="margin-bottom:12px;padding:12px;border:1px solid var(--gold-line);background:var(--gold-bg);color:var(--txt);font-size:13px;line-height:1.7"></p>
 
 <!-- 开始 -->
 <section id="scStart" class="on">
@@ -545,43 +546,6 @@ function pois(l){let L=Math.exp(-l),k=0,p=1;do{k++;p*=Math.random()}while(p>L);r
 function show(id){document.querySelectorAll('section').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');window.scrollTo(0,0);if(id==='scResult')requestAnimationFrame(rollNums)}
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
-/* ============ 图标：界面里的系统 emoji 统一换成自绘线条图标 ============ */
-// 只认这张表里的字符；国旗（.flag）不动。映射为空串的直接去掉
-const IC_MAP={'⚽':'ball','🏆':'trophy','👑':'crown','🏅':'medal','📋':'clip','📂':'folder','💾':'save','🆕':'plus','🏥':'medic',
-  '✨':'spark','🌟':'star','⭐':'star','😈':'rival','✅':'check','🤝':'link','💰':'coin','💘':'heart','⚠':'alert','👟':'boot',
-  '🎫':'ticket','🔄':'refresh','🔥':'flame','❄':'snow','🔭':'eye','👶':'person','🌏':'globe','⚔':'atk','⚖':'bal','🛡':'shield',
-  '🔒':'lock','📜':'scroll','🖋':'pen','📨':'mail','\u{1F389}':'','⚡':'','💕':'','💍':'','👨\u200d👩\u200d':'','🎯':'','🔁':'','🙌':''};
-const IC_RE=new RegExp('('+Object.keys(IC_MAP).filter(Boolean).sort((a,b)=>b.length-a.length).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')\uFE0F? ?','gu');
-function icSvg(name){
-  const NS='http://www.w3.org/2000/svg',sv=document.createElementNS(NS,'svg'),u=document.createElementNS(NS,'use');
-  sv.setAttribute('class','ic');sv.setAttribute('aria-hidden','true');u.setAttribute('href','#i-'+name);sv.appendChild(u);return sv;
-}
-function iconize(root){
-  if(!root||!root.ownerDocument&&root!==document)return;
-  const hits=[],w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;
-  while((n=w.nextNode())){
-    IC_RE.lastIndex=0;
-    if(!IC_RE.test(n.nodeValue))continue;
-    const p=n.parentNode;if(p&&p.closest&&p.closest('.flag,script,style,title,svg,canvas'))continue;
-    hits.push(n);
-  }
-  hits.forEach(t=>{
-    const s=t.nodeValue,f=document.createDocumentFragment();let last=0,m;IC_RE.lastIndex=0;
-    while((m=IC_RE.exec(s))){
-      if(m.index>last)f.appendChild(document.createTextNode(s.slice(last,m.index)));
-      const nm=IC_MAP[m[1]];
-      if(nm){f.appendChild(icSvg(nm));if(m[0].endsWith(' '))f.appendChild(document.createTextNode(' '))}
-      last=m.index+m[0].length;
-    }
-    if(last<s.length)f.appendChild(document.createTextNode(s.slice(last)));
-    t.parentNode.replaceChild(f,t);
-  });
-}
-new MutationObserver(ms=>{for(const m of ms){
-  if(m.type==='characterData')iconize(m.target.parentNode);
-  else m.addedNodes.forEach(x=>{if(x.nodeType===1)iconize(x);else if(x.nodeType===3&&x.parentNode)iconize(x.parentNode)});
-}}).observe(document.body,{childList:true,subtree:true,characterData:true});
-iconize(document.body);
 const reduceMotion=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}};
 const vibOn=()=>{try{return localStorage.getItem('yqcm_vib')!=='0'}catch(e){return true}};
 function setVib(on){try{localStorage.setItem('yqcm_vib',on?'1':'0')}catch(e){}showStats()}
@@ -686,9 +650,40 @@ const SITUS=[
 let S=null, M=null, G=null;
 
 /* ============ 存档 ============ */
-function save(){localStorage.setItem('yqcm1',JSON.stringify(S))}
-function loadGame(){
-  S=JSON.parse(localStorage.getItem('yqcm1'));
+let storageReadFailed=false;
+function storageNotice(message){const el=$('storageStatus');el.textContent=message;el.hidden=false}
+function readStorage(key){
+  try{const value=localStorage.getItem(key);storageReadFailed=false;return value}
+  catch(e){storageReadFailed=true;storageNotice('当前浏览器无法读取本地存档。请在之前保存生涯的浏览器中打开原链接。');return null}
+}
+function writeStorage(key,value){
+  if(storageReadFailed){
+    readStorage(key);
+    if(storageReadFailed){storageNotice('当前进度尚未保存：浏览器禁止访问本地存储。请保持此页面打开，允许存储后再点存档。');return false}
+  }
+  try{localStorage.setItem(key,value);if(!storageReadFailed)$('storageStatus').hidden=true;return true}
+  catch(e){storageNotice('当前进度尚未保存：浏览器存储不可用或空间不足。请保持此页面打开，释放空间或允许存储后再点存档。');return false}
+}
+function save(){return S?writeStorage('yqcm1',JSON.stringify(S)):false}
+function validSave(d){
+  if(!d||!d.player||!d.player.attrs||!Array.isArray(d.player.honors)||!Array.isArray(d.player.ratings))return false;
+  if(!['sho','dri','pac','pas','sta','men'].every(k=>Number.isFinite(d.player.attrs[k])))return false;
+  return !d.lg||!!LEAGUES[d.lg]&&Array.isArray(d.teams)&&d.teams.length>1&&Array.isArray(d.table)&&Array.isArray(d.schedule);
+}
+function loadFailure(){
+  $('evTitle').textContent='读取存档';
+  $('evText').textContent='无法读取这个存档：存档内容不完整或当前浏览器无法访问。原存档和当前进度均已保留，请换一个存档重试。';
+  $('evBtns').innerHTML='<button class="btn" onclick="openSlots(\'load\')">返回存档列表</button><button class="btn ghost mt" onclick="hideEv()">关闭</button>';
+  $('evOverlay').classList.remove('hidden');
+}
+function loadGame(key){
+  key=key||'yqcm1';
+  const raw=readStorage(key);let data;
+  try{data=JSON.parse(raw)}catch(e){loadFailure();return false}
+  if(!validSave(data)){loadFailure();return false}
+  const previous=S,screen=document.querySelector('section.on');
+  S=data;
+  try{
   if(S.player.energy==null){S.player.energy=100;S.player.trust=50} // 旧档迁移
   if(S.player.scout==null)S.player.scout=0;
   if(S.player.money==null){const p=S.player;p.money=5;p.pop=5;p.earnings=0;
@@ -740,17 +735,22 @@ function loadGame(){
     p.wage=calcWage();
   }
   goHome();
+  if(M&&M.timer){clearInterval(M.timer);M.timer=null}
+  G=null;M=null;$('overlay').classList.add('hidden');hideEv();
+  return true;
+  }catch(e){S=previous;if(screen)show(screen.id);loadFailure();return false}
 }
-if(localStorage.getItem('yqcm1'))$('btnLoad').style.display='block';
+if(readStorage('yqcm1'))$('btnLoad').style.display='block';
 /* ---- 手动存档槽（3个）+ 自动存档 ---- */
 const SLOTS=['yqcm_s1','yqcm_s2','yqcm_s3'];
 function slotInfo(key){
-  try{const d=JSON.parse(localStorage.getItem(key));if(!d||!d.player)return null;
+  const raw=readStorage(key);if(!raw)return null;
+  try{const d=JSON.parse(raw);if(!validSave(d))return {invalid:true};
     const p=d.player,lg=LEAGUES[d.lg];
     return {name:p.name,season:p.season,age:p.age,team:d.teams&&d.teams[0]&&d.teams[0].name,lg:lg?lg.name:'',ovr:Math.round(p.attrs.sho*.30+p.attrs.dri*.20+p.attrs.pac*.15+p.attrs.pas*.15+p.attrs.sta*.10+p.attrs.men*.10),time:d.savedAt||''}}
-  catch(e){return null}
+  catch(e){return {invalid:true}}
 }
-function slotLine(info){return info?`<b>${info.name}</b> · 第${info.season}季 ${info.age}岁 · ${info.team||''}（${info.lg}）· 综合${info.ovr}<br><span style="color:var(--dim);font-size:12px">${info.time||'—'}</span>`:'<span style="color:var(--dim)">— 空 —</span>'}
+function slotLine(info){return info?(info.invalid?'<span style="color:var(--red)">存档内容异常（原存档已保留）</span>':`<b>${info.name}</b> · 第${info.season}季 ${info.age}岁 · ${info.team||''}（${info.lg}）· 综合${info.ovr}<br><span style="color:var(--dim);font-size:12px">${info.time||'—'}</span>`):`<span style="color:var(--dim)">${storageReadFailed?'— 暂时无法读取 —':'— 空 —'}</span>`}
 function openSlots(mode){
   const inGame=!!S;
   const rows=SLOTS.map((k,i)=>{const info=slotInfo(k);
@@ -759,7 +759,7 @@ function openSlots(mode){
   const auto=slotInfo('yqcm1');
   const autoRow=mode==='load'&&auto?`<button class="evbtn" onclick="loadSlot('yqcm1')">🔄 自动存档：${slotLine(auto)}</button>`:'';
   $('evTitle').innerHTML=mode==='save'?'💾 保存到存档槽':'📂 读取存档';
-  $('evText').innerHTML=mode==='save'?'游戏每步都会自动存档；手动存档用来留一个"存档点"随时回退。':'读档会覆盖当前进度（当前进度仍保留在自动存档里，直到你下一步操作）。';
+  $('evText').innerHTML=storageReadFailed?'当前浏览器无法访问本地存档，暂时无法列出存档内容。请在之前保存生涯的浏览器中打开原链接。':mode==='save'?'游戏每步都会自动存档；手动存档用来留一个"存档点"随时回退。':'读取后将切换到所选生涯并更新自动存档。需要保留当前进度，请先手动存档。';
   $('evBtns').innerHTML=rows+autoRow+`<button class="btn ghost" style="width:100%;margin-top:12px" onclick="hideEv()">取消</button>`;
   $('evOverlay').classList.remove('hidden');
 }
@@ -767,16 +767,13 @@ function hideEv(){$('evOverlay').classList.add('hidden')}
 function saveSlot(i){
   if(!S)return;
   S.savedAt=new Date().toLocaleString('zh-CN',{hour12:false});
-  localStorage.setItem(SLOTS[i],JSON.stringify(S));save();
+  if(!writeStorage(SLOTS[i],JSON.stringify(S)))return;
+  save();
   openSlots('save');
   $('evText').innerHTML=`<b style="color:var(--green)">✅ 已保存到存档 ${i+1}</b>`;
 }
 function loadSlot(key){
-  const d=localStorage.getItem(key);if(!d)return;
-  if(M&&M.timer){clearInterval(M.timer);M.timer=null}
-  G=null;M=null;$('overlay').classList.add('hidden');hideEv();
-  localStorage.setItem('yqcm1',d);
-  loadGame();
+  return loadGame(key);
 }
 function confirmNew(){
   $('evTitle').innerHTML='🆕 开始新的足球人生？';
@@ -3128,6 +3125,51 @@ function retire(){
   $('rBtn').onclick=()=>{localStorage.removeItem('yqcm1');location.reload()};
   show('scResult');
 }
+</script>
+<script>
+/* 图标增强独立运行；内置浏览器不支持时保留原图标，不阻断生涯初始化。 */
+(function(){
+"use strict";
+try{
+/* ============ 图标：界面里的系统 emoji 统一换成自绘线条图标 ============ */
+// 只认这张表里的字符；国旗（.flag）不动。映射为空串的直接去掉
+const IC_MAP={'⚽':'ball','🏆':'trophy','👑':'crown','🏅':'medal','📋':'clip','📂':'folder','💾':'save','🆕':'plus','🏥':'medic',
+  '✨':'spark','🌟':'star','⭐':'star','😈':'rival','✅':'check','🤝':'link','💰':'coin','💘':'heart','⚠':'alert','👟':'boot',
+  '🎫':'ticket','🔄':'refresh','🔥':'flame','❄':'snow','🔭':'eye','👶':'person','🌏':'globe','⚔':'atk','⚖':'bal','🛡':'shield',
+  '🔒':'lock','📜':'scroll','🖋':'pen','📨':'mail','🎉':'','⚡':'','💕':'','💍':'','👨\u200d👩\u200d':'','🎯':'','🔁':'','🙌':''};
+const IC_RE=new RegExp('('+Object.keys(IC_MAP).filter(Boolean).sort((a,b)=>b.length-a.length).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')\uFE0F? ?','gu');
+function icSvg(name){
+  const NS='http://www.w3.org/2000/svg',sv=document.createElementNS(NS,'svg'),u=document.createElementNS(NS,'use');
+  sv.setAttribute('class','ic');sv.setAttribute('aria-hidden','true');u.setAttribute('href','#i-'+name);sv.appendChild(u);return sv;
+}
+function iconize(root){
+  if(!root||!root.ownerDocument&&root!==document)return;
+  const hits=[],w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;
+  while((n=w.nextNode())){
+    IC_RE.lastIndex=0;
+    if(!IC_RE.test(n.nodeValue))continue;
+    const p=n.parentNode;if(p&&p.closest&&p.closest('.flag,script,style,title,svg,canvas'))continue;
+    hits.push(n);
+  }
+  hits.forEach(t=>{
+    const s=t.nodeValue,f=document.createDocumentFragment();let last=0,m;IC_RE.lastIndex=0;
+    while((m=IC_RE.exec(s))){
+      if(m.index>last)f.appendChild(document.createTextNode(s.slice(last,m.index)));
+      const nm=IC_MAP[m[1]];
+      if(nm){f.appendChild(icSvg(nm));if(m[0].endsWith(' '))f.appendChild(document.createTextNode(' '))}
+      last=m.index+m[0].length;
+    }
+    if(last<s.length)f.appendChild(document.createTextNode(s.slice(last)));
+    t.parentNode.replaceChild(f,t);
+  });
+}
+new MutationObserver(ms=>{try{for(const m of ms){
+  if(m.type==='characterData')iconize(m.target.parentNode);
+  else m.addedNodes.forEach(x=>{if(x.nodeType===1)iconize(x);else if(x.nodeType===3&&x.parentNode)iconize(x.parentNode)});
+}}catch(e){/* 图标增强失败不影响游戏操作 */}}).observe(document.body,{childList:true,subtree:true,characterData:true});
+iconize(document.body);
+}catch(e){console.warn("图标增强未启用，使用默认图标。",e)}
+})();
 </script>
 </body>
 </html>
